@@ -1,0 +1,45 @@
+# Model Configuration
+models:
+  text_embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
+  image_embedding_model: "openai/clip-vit-base-patch32"
+  multimodal_model: "Qwen/Qwen2-VL-2B-Instruct"
+  llm_model: "llama3.1:8b"  # Ollama model
+
+# Vector Store Configuration
+vector_store:
+  type: "faiss"  # or "chroma"
+  dimension: 384
+  index_type: "IndexFlatIP"
+  similarity_threshold: 0.7
+
+# Document Processing
+document_processing:
+  chunk_size: 512
+  chunk_overlap: 50
+  image_resolution: [224, 224]
+  ocr_enabled: true
+
+# Retrieval Configuration
+retrieval:
+  top_k: 5
+  rerank_top_k: 3
+  hybrid_search: true
+  alpha: 0.7  # Weight for semantic search vs keyword search
+
+# Generation Configuration
+generation:
+  max_tokens: 1024
+  temperature: 0.1
+  system_prompt: "You are a helpful AI assistant that answers questions based on the provided context from documents."
+
+# API Configuration
+apis:
+  groq_api_key: "${GROQ_API_KEY}"
+  openai_api_key: "${OPENAI_API_KEY}"
+  together_api_key: "${TOGETHER_API_KEY}"
+
+# Logging
+logging:
+  level: "INFO"
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}"
+  file: "logs/app.log"
