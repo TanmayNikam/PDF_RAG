@@ -1,0 +1,58 @@
+# Example configuration files
+
+# config/generation_config.yaml
+#generation_config_yaml = """
+# Generation Module Configuration
+
+# Primary LLM Configuration
+primary_generator:
+  provider: "ollama"  # ollama, openai, groq
+  model: "llama3.1:8b"
+  config:
+    temperature: 0.1
+    max_tokens: 1024
+    top_p: 0.9
+    use_chat_model: true
+    ollama_base_url: "http://localhost:11434"
+    system_prompt: "You are a helpful AI assistant specialized in analyzing multimodal documents containing text, images, and tables. Provide accurate and comprehensive answers based on the provided context."
+
+# Fallback Generators (optional)
+fallback_generators:
+  - provider: "groq"
+    model: "llama-3.1-8b-instant"
+    config:
+      temperature: 0.1
+      max_tokens: 1024
+      groq_api_key: "${GROQ_API_KEY}"
+
+  - provider: "openai"
+    model: "gpt-3.5-turbo"
+    config:
+      temperature: 0.1
+      max_tokens: 1024
+      openai_api_key: "${OPENAI_API_KEY}"
+
+# Pipeline Settings
+enable_fallback: true
+enable_optimization: true
+default_template: "multimodal"
+enable_context_analysis: true
+
+# Prompt Management
+prompt_config:
+  custom_templates_path: "config/custom_prompts.yaml"
+
+# Response Optimization
+optimizer_config:
+  enable_citation_extraction: true
+  enable_formatting: true
+  enable_fact_checking: false
+  enable_source_tracking: true
+  max_response_length: 2000
+
+# Multimodal Processing
+multimodal_settings:
+  auto_detect_content_types: true
+  prioritize_visual_content: true
+  enable_cross_modal_references: true
+  max_context_per_type: 2000

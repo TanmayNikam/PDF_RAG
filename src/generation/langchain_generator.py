@@ -8,8 +8,9 @@ import json
 
 # LangChain imports
 try:
-    from langchain.llms import Ollama
-    from langchain.chat_models import ChatOllama
+    from langchain_community.llms import Ollama
+    from langchain_ollama import ChatOllama
+    # from langchain_community.chat_models import ChatOllama
     from langchain.schema import HumanMessage, SystemMessage, AIMessage
     from langchain.prompts import (
         PromptTemplate,
@@ -18,16 +19,16 @@ try:
         HumanMessagePromptTemplate
     )
     from langchain.chains import LLMChain
-    from langchain.callbacks import get_openai_callback
+    from langchain_community.callbacks import get_openai_callback
     LANGCHAIN_AVAILABLE = True
 except ImportError:
     LANGCHAIN_AVAILABLE = False
-    print("⚠️  LangChain not available. Install with: pip install langchain")
+    print(" LangChain not available. Install with: pip install langchain")
 
 # Additional LLM providers
 try:
-    from langchain.llms import OpenAI
-    from langchain.chat_models import ChatOpenAI
+    from langchain_community.llms import OpenAI
+    from langchain_community.chat_models import ChatOpenAI
 
     OPENAI_AVAILABLE = True
 except ImportError:
@@ -40,7 +41,7 @@ try:
     GROQ_AVAILABLE = True
 except ImportError:
     GROQ_AVAILABLE = False
-    print("⚠️  Groq not available. Install with: pip install langchain-groq")
+    print(" Groq not available. Install with: pip install langchain-groq")
 
 from .base_generator import BaseGenerator, GenerationRequest, GenerationResponse
 
@@ -57,7 +58,7 @@ class LangChainGenerator(BaseGenerator):
     - Chain-based generation
     """
 
-    def __init__(self, provider: str = "ollama", model_name: str = "llama3.1:8b", config: Dict = None):
+    def __init__(self, provider: str = "ollama", model_name: str = "llama3.2:3b", config: Dict = None):
         super().__init__(model_name, config)
 
         if not LANGCHAIN_AVAILABLE:
@@ -65,6 +66,7 @@ class LangChainGenerator(BaseGenerator):
 
         self.provider = provider.lower()
         self.llm = None
+        self.chat_model = None
         self.chat_model = None
 
         # Generation configuration
@@ -255,6 +257,7 @@ class LangChainGenerator(BaseGenerator):
             # Choose appropriate template
             template_type = request.generation_config.get('template_type', 'qa')
 
+
             # Generate response
             if self.use_chat_model and self.chat_model:
                 response_text = self._generate_with_chat_model(request, context, template_type)
@@ -322,7 +325,7 @@ class LangChainGenerator(BaseGenerator):
             )
 
         # Generate response
-        response = self.chat_model(messages)
+        response = self.chat_model.invoke(messages)
 
         if hasattr(response, 'content'):
             return response.content
@@ -470,12 +473,11 @@ class LangChainGenerator(BaseGenerator):
         """Check if the generator is available"""
         try:
             if self.use_chat_model and self.chat_model:
-                # Test with a simple message
-                test_response = self.chat_model([HumanMessage(content="Hello")])
+                test_response = self.chat_model.invoke([HumanMessage(content="Hello")])
                 return test_response is not None
             elif self.llm:
                 # Test with a simple prompt
-                test_response = self.llm("Hello")
+                test_response = self.llm.invoke("Hello")
                 return test_response is not None
             return False
         except:
@@ -488,7 +490,7 @@ class LangChainGenerator(BaseGenerator):
                 # This would need to call Ollama API to list models
                 # For now, return common models
                 return [
-                    "llama3.1:8b", "llama3.1:70b", "llama3.2:3b",
+                    "llama3.2:3b","llama3.1:8b", "llama3.1:70b",
                     "mistral:7b", "codellama:7b", "vicuna:7b"
                 ]
             except:

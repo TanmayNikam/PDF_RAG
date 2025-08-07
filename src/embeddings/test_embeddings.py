@@ -16,6 +16,10 @@ current_dir = Path(__file__).parent
 src_dir = current_dir.parent  # Go up from embeddings to src
 sys.path.insert(0, str(src_dir))
 
+
+import sys
+print("PATH:", sys.path)
+
 try:
     from embeddings import (
         create_embedder,
