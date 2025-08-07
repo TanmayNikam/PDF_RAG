@@ -445,7 +445,6 @@ class MultimodalGenerationPipeline:
         """Get comprehensive pipeline statistics"""
         return {
             'generators': self.get_available_generators(),
-            'templates': self.prompt_manager.list_templates(),
             'settings': {
                 'enable_fallback': self.enable_fallback,
                 'enable_optimization': self.enable_optimization,

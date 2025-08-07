@@ -87,6 +87,8 @@ class MultimodalEmbedder(BaseEmbedder):
         results = []
 
         for i, multimodal_content in enumerate(contents):
+
+            # print("type of multimodal content", type(multimodal_content))
             # Generate individual embeddings
             text_embedding = None
             image_embedding = None

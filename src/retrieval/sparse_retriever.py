@@ -113,7 +113,7 @@ class SparseRetriever(BaseRetriever):
         self.index_stats.update({
             'total_documents': len(self.documents),
             'vocabulary_size': len(self._get_vocabulary()),
-            'avg_doc_length': sum(len(doc) for doc in self.processed_documents) / len(self.processed_documents)
+            'avg_doc_length': 0 if len(self.processed_documents) == 0 else sum(len(doc) for doc in self.processed_documents) / len(self.processed_documents)
         })
 
 

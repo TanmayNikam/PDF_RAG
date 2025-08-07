@@ -7,6 +7,7 @@ from typing import List, Dict, Optional
 import numpy as np
 from src.embeddings import MultimodalContent
 from .base_retriever import BaseRetriever, Query, RetrievalResult
+import traceback
 
 
 class DenseRetriever(BaseRetriever):
@@ -44,7 +45,7 @@ class DenseRetriever(BaseRetriever):
                     embedding_result = self.embedder.embed(multimodal_content)
                 else:
                     # Standard text query
-                    embedding_result = self.embedder.embed(query.text)
+                    embedding_result = self.embedder.embed_text_only(query.text)
 
                 query.embedding = embedding_result.embedding
 
@@ -97,6 +98,7 @@ class DenseRetriever(BaseRetriever):
 
         except Exception as e:
             self.logger.error(f"Dense retrieval failed: {e}")
+            traceback.print_exc()
             raise
 
     def _rerank_results(self, results: List[RetrievalResult], query: Query) -> List[RetrievalResult]:
