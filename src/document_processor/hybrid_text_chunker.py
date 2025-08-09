@@ -117,7 +117,8 @@ class CustomRecursiveChunker(BaseChunker):
             else:
                 split_with_sep = split
 
-            # Check if adding this split would exceed chunk size
+            # Check if adding this split would exceed
+
             potential_chunk = current_chunk + split_with_sep
 
             if len(potential_chunk) <= self.chunk_size:

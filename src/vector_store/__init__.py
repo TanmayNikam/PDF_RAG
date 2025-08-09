@@ -7,6 +7,22 @@ from .base_vector_store import BaseVectorStore, VectorDocument, SearchResult
 from .faiss_vector_store import FAISSVectorStore
 from .hybrid_vector_store import HybridVectorStore
 
+import sys
+from pathlib import Path
+
+
+# current_dir = Path(__file__).parent
+# src_dir = current_dir.parent  # Go up from embeddings to src
+# sys.path.insert(0, str(src_dir))
+#
+# print(sys.path)
+
+try:
+    from src.embeddings import MultimodalContent
+except ImportError as e:
+    print(f"❌ Import error: {e}")
+    sys.exit(1)
+
 
 # Convenience function for creating vector stores
 def create_vector_store(store_type: str = "hybrid", dimension: int = 384, config: Dict = None) -> BaseVectorStore:
@@ -39,18 +55,28 @@ def documents_to_vector_documents(processed_documents: List, embedder) -> List[V
     for doc in processed_documents:
         for chunk_type in ['text_chunks', 'image_chunks', 'table_chunks', 'mixed_chunks']:
             chunks = doc.get(chunk_type, [])
-
+            print("chunk type is: ", chunk_type)
             for chunk in chunks:
                 # Generate embedding based on chunk type
                 if chunk_type == 'text_chunks':
-                    embedding_result = embedder.embed(chunk['content'])
+                    # embedding_result = embedder.embed(chunk['content'])
+                    # multiModalContent = MultimodalContent(text=chunk['content'])
+                    #
+
+                    multimodal_content = MultimodalContent(text=chunk['content'])
+                    embedding_result = embedder.embed(multimodal_content)
+
                     embedding = embedding_result.embedding
                     content_type = 'text'
                     content = chunk['content']
 
                 elif chunk_type == 'image_chunks':
                     if 'image_data' in chunk:
-                        embedding_result = embedder.embed(chunk['image_data'])
+                        # print("image chunk type as per python: ", type(chunk['content']))
+
+                        # embedding_result = embedder.embed_image_only(chunk['image_data'])
+                        multimodal_content = MultimodalContent(image=chunk['image_data'])
+                        embedding_result = embedder.embed(multimodal_content)
                         embedding = embedding_result.embedding
                         content_type = 'image'
                         content = chunk.get('extracted_text', f"[IMAGE: {chunk['chunk_id']}]")

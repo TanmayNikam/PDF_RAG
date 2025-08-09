@@ -352,7 +352,6 @@ def run_comprehensive_test():
     }
 
     try:
-        # Test 0: Dependencies
         # Test 1: Basic functionality
         processor = test_basic_functionality()
         results['basic_functionality'] = processor is not None
@@ -376,13 +375,13 @@ def run_comprehensive_test():
         if test_files:
             results['single_document'] = test_single_document(processor, test_files[0])
         else:
-            print("⚠️  No test files available, skipping document tests")
+            print(" No test files available, skipping document tests")
 
         # Test 5: Batch processing
         if test_files and len(test_files) > 1:
             results['batch_processing'] = test_batch_processing(processor, test_files[:2])
         else:
-            print("⚠️  Not enough test files for batch processing")
+            print(" Not enough test files for batch processing")
 
     except Exception as e:
         print(f"Test suite failed with error: {e}")
@@ -442,6 +441,8 @@ def main():
     parser.add_argument("--deps", action="store_true", help="Check dependencies only")
 
     args = parser.parse_args()
+
+    success = False
 
     if args.quick:
         success = quick_test()

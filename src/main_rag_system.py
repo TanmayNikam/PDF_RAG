@@ -69,8 +69,8 @@ class MultimodalRAGSystem:
                     'extract_images': True,
                     'min_image_size': (100, 100),
                     'ocr_enabled': True,
-                    'chunk_size': 512,
-                    'chunk_overlap': 50,
+                    'chunk_size': 800,
+                    'chunk_overlap': 80,
                 },
                 'image': {
                     'ocr_enabled': True,
@@ -78,8 +78,8 @@ class MultimodalRAGSystem:
                     'target_size': (512, 512),
                 },
                 'chunking': {
-                    'chunk_size': 512,
-                    'chunk_overlap': 50,
+                    'chunk_size': 800,
+                    'chunk_overlap': 80,
                     'strategy': 'adaptive',
                 }
             },
@@ -108,8 +108,8 @@ class MultimodalRAGSystem:
             # Retrieval config
             'retrieval': {
                 'type': 'hybrid',  # dense, sparse, hybrid
-                'dense_weight': 0.7,
-                'sparse_weight': 0.3,
+                'dense_weight': 0.8,
+                'sparse_weight': 0.2,
                 'fusion_method': 'weighted_sum',
                 'adaptive_weights': True,
                 'enable_query_processing': True,
@@ -124,7 +124,7 @@ class MultimodalRAGSystem:
                     'model': 'llama3.2:3b',
                     'config': {
                         'temperature': 0.1,
-                        'max_tokens': 2048,
+                        'max_tokens': 4096,
                         'use_chat_model': True
                     }
                 },
@@ -241,7 +241,7 @@ class MultimodalRAGSystem:
                         processing_result['failed_documents'] += 1
 
             processed_documents = list(processing_result['documents'].values())
-            self.logger.info(f" Processed {len(processed_documents)} documents")
+            self.logger.info(f" Processed {len(processed_documents)} documents. Processing results {processing_result}")
 
             # Step 2: Convert to vector documents
             self.logger.info(" Step 2: Generating embeddings...")
@@ -729,22 +729,54 @@ if __name__ == "__main__":
     )
 
     # Example 1: Create system and add documents
+
+
+
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run the complete RAG System Integration")
+    parser.add_argument("--save", action="store_true", help="save the system")
+    parser.add_argument("--load", action="store_true", help="load the system")
+
+    args = parser.parse_args()
+
+    root_dir = Path(__file__).parent.parent
+    resources_dir = root_dir / "resources"
+
+
     print(" Creating Multimodal RAG System...")
     rag = create_rag_system()
 
-    # Example 2: Add some PDF files (update paths as needed)
-    # pdf_files = [
-    #     "path/to/your/document1.pdf",
-    #     "path/to/your/document2.pdf"
-    # ]
-    # rag.add_documents(pdf_files)
+    if args.load:
+        load_success = rag.load_system(resources_dir)
 
-    # Example 3: Query the system
-    # response = rag.query("What is the main contribution of this research?")
-    # print(f"Answer: {response['answer']}")
+        if load_success:
+            print("Loaded the rag system successfully.")
+        else:
+            print("Failed to load the rag system")
+
+   # Adding some file and saving the system
+
+    if args.save:
+        pdf_files = [
+            "/Users/tanmay/Downloads/hm-rag.pdf"
+        ]
+        rag.add_documents(pdf_files)
+
+        save_success = rag.save_system(resources_dir)
+
+        if save_success:
+            print("RAG system saved successfully")
+        else:
+            print("Failed to save the rag system")
+
+
+    # Querying the system
+    response = rag.query("what is the pdf document about?")
+    print(f"Answer: {response['answer']}")
 
     # Example 4: Interactive demo
-    # rag.interactive_demo()
+    rag.interactive_demo()
 
     print(" RAG System created successfully!")
     print(" Next steps:")

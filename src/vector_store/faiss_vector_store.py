@@ -10,6 +10,7 @@ import numpy as np
 import pickle
 import json
 from pathlib import Path
+import traceback
 
 try:
     import faiss
@@ -108,7 +109,14 @@ class FAISSVectorStore(BaseVectorStore):
             # Get starting index position
             start_idx = self.index.ntotal
 
+            # print(embeddings, type(embeddings))
+
             # Add to FAISS index
+
+            print(f"Faiss Embeddings dimension: {self.index.d}")
+
+            print(f"Documents dimension: {embeddings.shape}")
+
             self.index.add(embeddings)
 
             # Store documents and maintain mappings
@@ -142,6 +150,7 @@ class FAISSVectorStore(BaseVectorStore):
             return doc_ids
 
         except Exception as e:
+            traceback.print_exc()
             self.logger.error(f"Failed to add documents to FAISS store: {e}")
             raise
 

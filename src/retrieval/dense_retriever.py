@@ -39,13 +39,16 @@ class DenseRetriever(BaseRetriever):
         try:
             # Generate query embedding if not provided
             if query.embedding is None:
+                print("query_type: ", query.query_type)
                 if query.query_type == "multimodal":
                     # Handle multimodal queries
                     multimodal_content = MultimodalContent(text=query.text)
                     embedding_result = self.embedder.embed(multimodal_content)
                 else:
                     # Standard text query
-                    embedding_result = self.embedder.embed_text_only(query.text)
+                    multimodal_content = MultimodalContent(text=query.text)
+                    embedding_result = self.embedder.embed(multimodal_content)
+                    # embedding_result = self.embedder.embed(query.text)
 
                 query.embedding = embedding_result.embedding
 
