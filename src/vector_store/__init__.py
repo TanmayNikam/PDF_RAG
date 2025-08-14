@@ -17,6 +17,9 @@ from pathlib import Path
 #
 # print(sys.path)
 
+# project_root = Path("/kaggle/working/MultiModalRAGS/MultiModalRAGS")
+# sys.path.insert(0, str(project_root))
+
 try:
     from src.embeddings import MultimodalContent
 except ImportError as e:
@@ -55,7 +58,7 @@ def documents_to_vector_documents(processed_documents: List, embedder) -> List[V
     for doc in processed_documents:
         for chunk_type in ['text_chunks', 'image_chunks', 'table_chunks', 'mixed_chunks']:
             chunks = doc.get(chunk_type, [])
-            print("chunk type is: ", chunk_type)
+            # print("chunk type is: ", chunk_type)
             for chunk in chunks:
                 # Generate embedding based on chunk type
                 if chunk_type == 'text_chunks':
@@ -113,6 +116,51 @@ def documents_to_vector_documents(processed_documents: List, embedder) -> List[V
     return vector_docs
 
 
+def colpali_documents_to_vector_documents(processed_documents: List, colpali_embedder) -> List[VectorDocument]:
+    """
+    Convert ColPali processed documents to VectorDocuments
+
+    This bridges ColPali document processor with the vector store
+    """
+    vector_docs = []
+
+    for doc in processed_documents:
+        # print("each document: ", doc)
+        colpali_chunks = doc.get('colpali_chunks', [])
+
+        for chunk in colpali_chunks:
+            # Generate embedding for the page image
+            page_image = chunk['page_image']
+            embedding_result = colpali_embedder.embed(page_image)
+
+            # Create VectorDocument for the page
+            vector_doc = VectorDocument(
+                id=chunk['chunk_id'],
+                embedding=embedding_result.embedding,
+                content=chunk['content'],
+                metadata={
+                    'chunk_type': 'colpali_page',
+                    'document_id': doc['document_id'],
+                    'page_number': chunk['page_number'],
+                    'page_size': chunk['page_size'],
+                    'file_path': doc.get('file_path'),
+                    'processing_timestamp': doc['metadata'].get('processing_timestamp'),
+                    'dpi': chunk['metadata'].get('dpi'),
+                    'original_size': chunk['metadata'].get('original_size'),
+                    'rendering_method': 'colpali',
+                    'has_page_image': True,
+                    'image_format': chunk['metadata'].get('image_format', 'PNG')
+                },
+                content_type='document_image',
+                chunk_id=chunk['chunk_id'],
+                parent_document_id=doc['document_id']
+            )
+
+            vector_docs.append(vector_doc)
+
+    return vector_docs
+
+
 __all__ = [
     'BaseVectorStore',
     'VectorDocument',
@@ -120,5 +168,6 @@ __all__ = [
     'FAISSVectorStore',
     'HybridVectorStore',
     'create_vector_store',
-    'documents_to_vector_documents'
+    'documents_to_vector_documents',
+    'colpali_documents_to_vector_documents'
 ]

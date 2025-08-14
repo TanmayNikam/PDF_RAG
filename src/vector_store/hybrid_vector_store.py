@@ -88,6 +88,7 @@ class HybridVectorStore(BaseVectorStore):
 
         search_params = search_params or {}
 
+
         # Check cache first
         if self.enable_caching:
             cache_key = self._get_cache_key(query_embedding, top_k, filters)
@@ -100,6 +101,7 @@ class HybridVectorStore(BaseVectorStore):
         try:
             # Get more results than requested for post-processing
             search_k = min(top_k * 2, self.document_count)
+
 
             # Primary search using FAISS
             primary_results = self.primary_store.search(

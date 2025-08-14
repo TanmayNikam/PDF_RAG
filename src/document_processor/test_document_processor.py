@@ -11,6 +11,7 @@ import json
 import requests
 from typing import List
 
+from document_processor.colpali_processor import ColPaliDocumentProcessor
 
 # Add src to path for imports - this ensures PyCharm can find modules
 current_dir = Path(__file__).parent
@@ -110,13 +111,23 @@ def test_basic_functionality():
         }
     }
 
-    try:
-        processor = MultimodalDocumentProcessor(config)
+    colpali_config = {
+                'enabled': True,  # Enable to use ColPali
+                'model_name': 'vidore/colpali',
+                'dpi': 150,
+                'batch_size': 1,
+                'visual_similarity_threshold': 0.0,
+                'min_page_size': (100, 100),
+                'image_format': 'PNG'
+            }
 
+    try:
+        # processor = MultimodalDocumentProcessor(config)
+        processor = ColPaliDocumentProcessor(colpali_config)
         # Test processor stats
-        stats = processor.get_processing_stats()
+        # stats = processor.get_processing_stats()
         print("Processor capabilities:")
-        print(json.dumps(stats, indent=2))
+        # print(json.dumps(stats, indent=2))
 
         return processor
     except Exception as e:

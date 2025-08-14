@@ -22,14 +22,15 @@ import shutil
 from pathlib import Path
 from typing import List, Dict
 import logging
+import traceback
 
 # Add src to path
-current_dir = Path(__file__).parent
-if current_dir.name != 'src':
-    src_dir = current_dir / 'src'
-else:
-    src_dir = current_dir
-sys.path.insert(0, str(src_dir))
+# current_dir = Path(__file__).parent
+# if current_dir.name != 'src':
+#     src_dir = current_dir / 'src'
+# else:
+#     src_dir = current_dir
+# sys.path.insert(0, str(src_dir))
 
 try:
     from main_rag_system import MultimodalRAGSystem, create_rag_system, quick_rag_setup
@@ -38,6 +39,27 @@ except ImportError as e:
     print("Make sure you have the complete src/ directory structure with all modules")
     sys.exit(1)
 
+
+
+COLPALI_CONFIG_EXAMPLE = {
+    'colpali': {
+        'enabled': True,
+        'model_name': 'vidore/colpali',
+        'dpi': 150,
+        'batch_size': 1,
+        'visual_similarity_threshold': 0.0,
+        'boost_visual_content': True,
+        'page_context_window': 2
+    },
+    'embeddings': {
+        'type': 'colpali',  # Use ColPali instead of multimodal
+        'normalize_embeddings': True
+    },
+    'retrieval': {
+        'type': 'hybrid',  # Can still use hybrid with ColPali component
+        'enable_colpali': True
+    }
+}
 
 def create_test_pdf_content() -> bytes:
     """Create a simple test PDF with text content"""
@@ -142,12 +164,12 @@ def create_test_documents() -> List[Path]:
         with open(pdf_path, 'wb') as f:
             f.write(pdf_content)
         documents.append(pdf_path)
-    else:
-        # Text fallback
-        txt_path = test_dir / "test_research_paper.txt"
-        with open(txt_path, 'wb') as f:
-            f.write(pdf_content)
-        documents.append(txt_path)
+    # else:
+    #     # Text fallback
+    #     txt_path = test_dir / "test_research_paper.txt"
+    #     with open(txt_path, 'wb') as f:
+    #         f.write(pdf_content)
+    #     documents.append(txt_path)
 
     # Create additional text documents
     additional_docs = [
@@ -203,11 +225,11 @@ sequential data like text and time series.
         }
     ]
 
-    for doc_info in additional_docs:
-        doc_path = test_dir / doc_info['name']
-        with open(doc_path, 'w', encoding='utf-8') as f:
-            f.write(doc_info['content'])
-        documents.append(doc_path)
+    # for doc_info in additional_docs:
+    #     doc_path = test_dir / doc_info['name']
+    #     with open(doc_path, 'w', encoding='utf-8') as f:
+    #         f.write(doc_info['content'])
+    #     documents.append(doc_path)
 
     print(f"✅ Created {len(documents)} test documents in {test_dir}")
     return documents, test_dir
@@ -221,7 +243,7 @@ def test_system_initialization():
 
     try:
         print("🔧 Creating RAG system with default configuration...")
-        rag_system = create_rag_system()
+        rag_system = create_rag_system(COLPALI_CONFIG_EXAMPLE)
 
         print("✅ System initialized successfully")
 
@@ -391,7 +413,7 @@ def test_system_persistence(rag_system):
 
         # Create new system and load
         print("📁 Creating new system and loading...")
-        new_rag_system = create_rag_system()
+        new_rag_system = create_rag_system(COLPALI_CONFIG_EXAMPLE)
         load_success = new_rag_system.load_system(temp_save_dir)
 
         if not load_success:
@@ -442,7 +464,7 @@ def test_error_handling(rag_system):
 
     try:
         # Test query with no documents (on fresh system)
-        fresh_system = create_rag_system()
+        fresh_system = create_rag_system(COLPALI_CONFIG_EXAMPLE)
         result = fresh_system.query("Test query")
 
         if not result['success'] and 'no documents' in result['error'].lower():
@@ -498,10 +520,11 @@ def run_comprehensive_test():
         results['initialization'] = test_system_initialization()
 
         if results['initialization']:
-            rag_system = create_rag_system()
+            rag_system = create_rag_system(COLPALI_CONFIG_EXAMPLE)
 
             # Test 2: Document Processing
             results['document_processing'] = test_document_processing(rag_system, test_documents)
+
 
             # Test 3: Query Answering (only if documents were processed)
             if results['document_processing']:
@@ -582,7 +605,7 @@ def run_quick_test():
     try:
         # Quick system test
         print("🔧 Creating RAG system...")
-        rag_system = create_rag_system()
+        rag_system = create_rag_system(COLPALI_CONFIG_EXAMPLE)
 
         # Health check
         health = rag_system.health_check()
@@ -662,7 +685,8 @@ def run_interactive_demo():
         print("🔧 Setting up RAG system with sample documents...")
         test_documents, test_dir = create_test_documents()
 
-        rag_system = create_rag_system()
+        rag_system = create_rag_system(COLPALI_CONFIG_EXAMPLE)
+        print("rag system: ", rag_system)
         add_result = rag_system.add_documents(test_documents)
 
         if add_result['success']:

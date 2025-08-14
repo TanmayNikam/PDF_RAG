@@ -4,6 +4,7 @@ transformers>=4.30.0
 sentence-transformers>=2.2.2
 faiss-cpu>=1.7.4
 chromadb>=0.4.0
+torchvision>=0.22.1
 
 # Document Processing
 PyPDF2>=3.0.1
@@ -40,3 +41,18 @@ pytest-cov>=4.1.0
 # for building sparse retrievers
 rank-bm25>=0.2.2
 nltk>=3.8
+
+spacy>=3.8.7
+
+langchain>=0.3.27
+langchain-community>=0.3.27
+langchain-core>=0.3.72
+langchain-groq>=0.3.6
+langchain-ollama>=0.3.6
+langchain-openai>=0.3.28
+langchain-together>=0.3.0
+
+
+colpali_engine>=0.3.12
+
+pyinflect>=0.5.1

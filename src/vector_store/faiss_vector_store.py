@@ -166,6 +166,8 @@ class FAISSVectorStore(BaseVectorStore):
             # Prepare query embedding
             query = query_embedding.reshape(1, -1).astype(np.float32)
 
+            print("query embeddding: ", query)
+
             # Normalize for cosine similarity
             if self.index_type in ['IndexFlatIP', 'IndexIVFFlat']:
                 norm = np.linalg.norm(query)
@@ -175,10 +177,13 @@ class FAISSVectorStore(BaseVectorStore):
             # Perform FAISS search
             search_k = min(top_k * 2, self.document_count)  # Get extra results for filtering
 
+
             if hasattr(self.index, 'nprobe'):
                 self.index.nprobe = self.nprobe
 
             scores, indices = self.index.search(query, search_k)
+
+            print(f"score: {scores}, indices: {indices}")
 
             # Convert results to SearchResult objects
             results = []

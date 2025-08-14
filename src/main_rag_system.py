@@ -13,9 +13,14 @@ import traceback
 # Import all our custom modules
 from src.document_processor import MultimodalDocumentProcessor
 from src.embeddings import create_embedder, MultimodalContent
-from src.vector_store import create_vector_store, documents_to_vector_documents
+from src.vector_store import create_vector_store, documents_to_vector_documents, colpali_documents_to_vector_documents
 from src.retrieval import create_retriever, RetrievalPipeline, Query
 from src.generation import create_generation_pipeline, MultimodalGenerationPipeline
+
+from src.embeddings.colpali_embedder import ColPaliEmbedder
+from src.document_processor.colpali_processor import ColPaliDocumentProcessor
+from src.retrieval.colpali_retriever import ColPaliRetriever
+from vector_store import VectorDocument
 
 
 class MultimodalRAGSystem:
@@ -32,7 +37,7 @@ class MultimodalRAGSystem:
 
     def __init__(self, config: Dict = None):
         """Initialize the complete RAG system"""
-        self.config = config or self._default_config()
+        self.config = self._default_config()
         self.logger = logging.getLogger(__name__)
 
         # System state
@@ -63,6 +68,15 @@ class MultimodalRAGSystem:
     def _default_config(self) -> Dict:
         """Default system configuration"""
         return {
+            'colpali': {
+                'enabled': True,  # Enable to use ColPali
+                'model_name': 'vidore/colpali',
+                'dpi': 150,
+                'batch_size': 1,
+                'visual_similarity_threshold': 0.0,
+                'min_page_size': (100, 100),
+                'image_format': 'PNG'
+            },
             # Document processing config
             'document_processor': {
                 'pdf': {
@@ -86,7 +100,7 @@ class MultimodalRAGSystem:
 
             # Embedding config
             'embeddings': {
-                'type': 'multimodal',  # text, image, multimodal
+                'type': 'colpali',  # text, image, multimodal
                 'text_model': 'sentence-transformers/all-MiniLM-L6-v2',
                 'image_model': 'openai/clip-vit-base-patch32',
                 'fusion_method': 'concatenation',
@@ -100,7 +114,7 @@ class MultimodalRAGSystem:
                     'index_type': 'IndexFlatIP',
                     'metric_type': 'INNER_PRODUCT'
                 },
-                'enable_caching': True,
+                'enable_caching': False,
                 'cache_size': 1000,
                 'enable_reranking': True
             },
@@ -114,7 +128,8 @@ class MultimodalRAGSystem:
                 'adaptive_weights': True,
                 'enable_query_processing': True,
                 'enable_reranking': True,
-                'enable_diversity': True
+                'enable_diversity': True,
+                'enable_colpali':True
             },
 
             # Generation config
@@ -150,18 +165,37 @@ class MultimodalRAGSystem:
     def _initialize_system(self):
         """Initialize all system components"""
         try:
-            # 1. Initialize Document Processor
-            self.logger.info(" Initializing Document Processor...")
-            self.document_processor = MultimodalDocumentProcessor(
-                self.config['document_processor']
-            )
+            print(self.config)
+            if self.config.get('colpali', {}).get('enabled', False):
+                self.logger.info("🔧 Initializing ColPali...")
 
-            # 2. Initialize Embedder
-            self.logger.info(" Initializing Multimodal Embedder...")
-            self.embedder = create_embedder(
-                self.config['embeddings']['type'],
-                config=self.config['embeddings']
-            )
+                self.document_processor = ColPaliDocumentProcessor(self.config['colpali'])
+
+
+                self.embedder = ColPaliEmbedder(
+                    self.config['colpali']['model_name'],
+                    self.config['colpali']
+                )
+
+
+                self.logger.info("✅ ColPali components initialized")
+
+            else:
+
+                # 1. Initialize Document Processor
+                self.logger.info(" Initializing Document Processor...")
+                self.document_processor = MultimodalDocumentProcessor(
+                    self.config['document_processor']
+                )
+
+                # 2. Initialize Embedder
+                self.logger.info(" Initializing Multimodal Embedder...")
+                self.embedder = create_embedder(
+                    self.config['embeddings']['type'],
+                    config=self.config['embeddings']
+                )
+
+
 
             # 3. Initialize Vector Store
             self.logger.info(" Initializing Vector Store...")
@@ -171,17 +205,26 @@ class MultimodalRAGSystem:
                 config=self.config['vector_store']
             )
 
-            # 4. Initialize Retrieval System
-            self.logger.info(" Initializing Retrieval System...")
-            retriever = create_retriever(
-                self.config['retrieval']['type'],
-                vector_store=self.vector_store,
-                embedder=self.embedder,
-                config=self.config['retrieval']
-            )
+            # Initialize Retriever
 
+            if self.config.get('colpali', {}).get('enabled', False):
+                self.retriever = ColPaliRetriever(
+                    self.vector_store,
+                    self.embedder,
+                    self.config['colpali']
+                )
+            else:
+                self.retriever = create_retriever(
+                    self.config['retrieval']['type'],
+                    vector_store=self.vector_store,
+                    embedder=self.embedder,
+                    config=self.config['retrieval']
+                )
+
+            # 4. Initializing the Retrieval System
+            self.logger.info(" Initializing Retrieval System...")
             self.retrieval_system = RetrievalPipeline(
-                retriever=retriever,
+                retriever=self.retriever,
                 config=self.config['retrieval']
             )
 
@@ -217,6 +260,7 @@ class MultimodalRAGSystem:
         self.logger.info(f" Adding {len(file_paths)} documents to RAG system...")
 
         try:
+
             # Step 1: Process documents
             self.logger.info(" Step 1: Processing documents...")
             if batch_process:
@@ -233,10 +277,13 @@ class MultimodalRAGSystem:
 
                 for file_path in file_paths:
                     try:
+                        print(f"document processor: {self.document_processor}, file path: {file_path}")
                         result = self.document_processor.process_document(file_path)
                         processing_result['documents'][result['document_id']] = result
                         processing_result['successful_documents'] += 1
                     except Exception as e:
+                        import traceback
+                        traceback.print_exc()
                         self.logger.error(f"Failed to process {file_path}: {e}")
                         processing_result['failed_documents'] += 1
 
@@ -245,9 +292,16 @@ class MultimodalRAGSystem:
 
             # Step 2: Convert to vector documents
             self.logger.info(" Step 2: Generating embeddings...")
-            vector_docs = documents_to_vector_documents(processed_documents, self.embedder)
+            # print("embedder while adding documents is: ",self.embedder)
+            print("is colpali enabled: ", self.config.get('colpali',{}).get('enabled', False))
+            print("processed_documents: ", processed_documents)
+            if(self.config.get('colpali',{}).get('enabled', False)):
+                vector_docs = colpali_documents_to_vector_documents(processed_documents, self.embedder)
+            else:
+                vector_docs = documents_to_vector_documents(processed_documents, self.embedder)
             self.logger.info(f" Generated {len(vector_docs)} vector documents")
 
+            print("vector docs: ", vector_docs)
             # Step 3: Add to vector store
             self.logger.info(" Step 3: Adding to vector store...")
             doc_ids = self.vector_store.add_documents(vector_docs)
@@ -299,6 +353,7 @@ class MultimodalRAGSystem:
 
         except Exception as e:
             self.logger.error(f" Document addition failed: {e}")
+            import traceback
             traceback.print_exc()
             return {
                 'success': False,
@@ -341,6 +396,7 @@ class MultimodalRAGSystem:
         try:
             # Step 1: Retrieve relevant documents
             self.logger.info(" Step 1: Retrieving relevant documents...")
+            # print("retrieval system: ", self.retrieval_system.retriever, hasattr(self.retrieval_system, 'search'), hasattr(self.retrieval_system.retriever, 'add_documents'))
             retrieval_results = self.retrieval_system.search(
                 query_text=question,
                 top_k=top_k,
@@ -411,6 +467,8 @@ class MultimodalRAGSystem:
             return response
 
         except Exception as e:
+            import traceback
+            print(traceback.print_exc())
             self.logger.error(f" Query processing failed: {e}")
             return {
                 'success': False,

@@ -7,7 +7,7 @@
 # Primary LLM Configuration
 primary_generator:
   provider: "ollama"  # ollama, openai, groq
-  model: "llama3.1:8b"
+  model: "llama3.2:3b"
   config:
     temperature: 0.1
     max_tokens: 1024
