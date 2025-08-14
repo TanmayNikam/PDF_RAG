@@ -2,3 +2,10 @@
 .rag_outputs/
 .resources/
 .DS_Store
+
+# Ignore Python cache files/folders
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
