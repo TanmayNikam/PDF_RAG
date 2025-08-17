@@ -130,8 +130,12 @@ def colpali_documents_to_vector_documents(processed_documents: List, colpali_emb
 
         for chunk in colpali_chunks:
             # Generate embedding for the page image
+
             page_image = chunk['page_image']
             embedding_result = colpali_embedder.embed(page_image)
+
+            import base64
+            img_base64 = base64.b64encode(page_image).decode('utf-8')
 
             # Create VectorDocument for the page
             vector_doc = VectorDocument(
@@ -148,8 +152,10 @@ def colpali_documents_to_vector_documents(processed_documents: List, colpali_emb
                     'dpi': chunk['metadata'].get('dpi'),
                     'original_size': chunk['metadata'].get('original_size'),
                     'rendering_method': 'colpali',
+                    'page_image': img_base64,
                     'has_page_image': True,
-                    'image_format': chunk['metadata'].get('image_format', 'PNG')
+                    'image_format': chunk['metadata'].get('image_format', 'PNG'),
+                    'has_visual_data': True
                 },
                 content_type='document_image',
                 chunk_id=chunk['chunk_id'],

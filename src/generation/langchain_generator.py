@@ -58,7 +58,7 @@ class LangChainGenerator(BaseGenerator):
     - Chain-based generation
     """
 
-    def __init__(self, provider: str = "ollama", model_name: str = "llama3.2:3b", config: Dict = None):
+    def __init__(self, provider: str = "ollama", model_name: str = "qwen2.5vl:3b", config: Dict = None):
         super().__init__(model_name, config)
 
         if not LANGCHAIN_AVAILABLE:
@@ -100,6 +100,8 @@ class LangChainGenerator(BaseGenerator):
             self._initialize_openai()
         elif self.provider == "groq":
             self._initialize_groq()
+        elif self.provider == "qwen_vl":
+            self._initialize_qwen_vl()
         else:
             raise ValueError(f"Unsupported provider: {self.provider}")
 
@@ -126,6 +128,8 @@ class LangChainGenerator(BaseGenerator):
                 )
 
             self.logger.info(f" Initialized Ollama with {self.model_name}")
+
+            self.is_vision_model = 'vl' in self.model_name.lower() or self.config.get('vision_enabled', False)
 
         except Exception as e:
             self.logger.error(f"Failed to initialize Ollama: {e}")
@@ -302,7 +306,12 @@ class LangChainGenerator(BaseGenerator):
         """Generate using chat model"""
 
         # Select template
-        if template_type == 'multimodal':
+        has_images = any(doc.get('metadata',{}).get('page_image',None) for doc in request.context_documents)
+
+        if self.is_vision_model and has_images:
+            # Handle multimodal input
+            messages = self._create_vision_messages(request, context)
+        elif template_type == 'multimodal':
             # Handle multimodal content
             text_context, image_context = self._separate_multimodal_context(request.context_documents)
             prompt = self.multimodal_template.format(
@@ -331,6 +340,38 @@ class LangChainGenerator(BaseGenerator):
             return response.content
         else:
             return str(response)
+
+    def _create_vision_messages(self, request: GenerationRequest, context: str) -> List:
+        """Create messages with both text and images for vision models"""
+
+        # Prepare text context
+        text_parts = []
+        images = []
+
+        for doc in request.context_documents:
+            if doc.get('metadata',{}).get('page_image',False):
+                images.append(doc.get('metadata',{}).get('page_image'))
+                text_parts.append(f"Page {doc.get('rank', 0)}: [See image]")
+            else:
+                text_parts.append(doc['content'])
+
+        combined_context = '\n\n'.join(text_parts)
+
+        # Create multimodal message
+        content = [
+            {"type": "text", "text": f"Context: {combined_context}\n\nQuestion: {request.query}"}
+        ]
+
+        # Add images
+        for img in images:
+            # import base64
+            # img_base64 = base64.b64encode(img).decode('utf-8')
+            content.append({
+                "type": "image_url",
+                "image_url": {"url": f"data:image/png;base64,{img}"}
+            })
+
+        return [HumanMessage(content=content)]
 
     def _generate_with_llm(self, request: GenerationRequest, context: str, template_type: str) -> str:
         """Generate using standard LLM"""

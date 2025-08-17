@@ -136,11 +136,12 @@ class MultimodalRAGSystem:
             'generation': {
                 'primary_generator': {
                     'provider': 'ollama',
-                    'model': 'llama3.2:3b',
+                    'model': 'qwen2.5vl:3b',
                     'config': {
                         'temperature': 0.1,
                         'max_tokens': 4096,
-                        'use_chat_model': True
+                        'use_chat_model': True,
+                        'vision_enabled': True
                     }
                 },
                 'enable_fallback': True,
@@ -293,15 +294,15 @@ class MultimodalRAGSystem:
             # Step 2: Convert to vector documents
             self.logger.info(" Step 2: Generating embeddings...")
             # print("embedder while adding documents is: ",self.embedder)
-            print("is colpali enabled: ", self.config.get('colpali',{}).get('enabled', False))
-            print("processed_documents: ", processed_documents)
+            # print("is colpali enabled: ", self.config.get('colpali',{}).get('enabled', False))
+            # print("processed_documents: ", processed_documents)
             if(self.config.get('colpali',{}).get('enabled', False)):
                 vector_docs = colpali_documents_to_vector_documents(processed_documents, self.embedder)
             else:
                 vector_docs = documents_to_vector_documents(processed_documents, self.embedder)
             self.logger.info(f" Generated {len(vector_docs)} vector documents")
 
-            print("vector docs: ", vector_docs)
+            # print("vector docs: ", vector_docs)
             # Step 3: Add to vector store
             self.logger.info(" Step 3: Adding to vector store...")
             doc_ids = self.vector_store.add_documents(vector_docs)

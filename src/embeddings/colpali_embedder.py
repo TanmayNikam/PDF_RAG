@@ -47,7 +47,6 @@ class ColPaliEmbedder(BaseEmbedder):
             # Get device
             self.device = get_torch_device("auto")
 
-            print("device: ", self.device)
 
             # Load model and processor
             self.model = ColPali.from_pretrained(

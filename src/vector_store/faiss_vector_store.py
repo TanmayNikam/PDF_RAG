@@ -166,7 +166,7 @@ class FAISSVectorStore(BaseVectorStore):
             # Prepare query embedding
             query = query_embedding.reshape(1, -1).astype(np.float32)
 
-            print("query embeddding: ", query)
+            # print("query embeddding: ", query)
 
             # Normalize for cosine similarity
             if self.index_type in ['IndexFlatIP', 'IndexIVFFlat']:

@@ -63,16 +63,17 @@ class ColPaliRetriever(BaseRetriever):
                     metadata=result.document.metadata.copy(),
                     chunk_metadata=result.search_metadata,
                     parent_document_id=result.document.parent_document_id,
-                    relevance_score=result.score
+                    relevance_score=result.score,
                 )
 
-                print("retrieval results", retrieval_results)
+                retrieval_result.metadata['page_image'] = self._get_original_page_image(result.document.id)
 
                 # Add ColPali-specific metadata
                 retrieval_result.metadata.update({
                     'visual_retrieval': True,
                     'colpali_processed': True,
-                    'page_based': True
+                    'page_based': True,
+                    'page_image': result.document.metadata.get('page_image')
                 })
 
                 # Apply similarity threshold
@@ -193,4 +194,10 @@ class ColPaliRetriever(BaseRetriever):
 
         return context_pages
 
-
+    def _get_original_page_image(self, document_id: str) -> bytes:
+        """Retrieve original page image from separate storage"""
+        # Load from file system, database, or cache
+        # Based on the document_id/chunk_id
+        image_path = f"/content/MultModalRAGS/MultiModalRAGS/processed_images/{document_id}.png"
+        with open(image_path, 'rb') as f:
+            return f.read()

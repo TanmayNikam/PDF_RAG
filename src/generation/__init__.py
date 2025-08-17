@@ -39,11 +39,12 @@ def create_generation_pipeline(config: Dict = None) -> MultimodalGenerationPipel
     default_config = {
         "primary_generator": {
             "provider": "ollama",
-            "model": "llama3.2:3b",
+            "model": "qwen2.5vl:3b",
             "config": {
                 "temperature": 0.1,
                 "max_tokens": 4096,
-                "use_chat_model": True
+                "use_chat_model": True,
+                'vision_enabled': True
             }
         },
         "enable_fallback": True,
@@ -67,11 +68,12 @@ COMMON_TEMPLATES = {
     "pdf_qa": {
         "primary_generator": {
             "provider": "ollama",
-            "model": "llama3.2:3b",
+            "model": "qwen2.5vl:3b",
             'config': {
                 'temperature': 0.1,
                 'max_tokens': 4096,
-                'use_chat_model': True
+                'use_chat_model': True,
+                'vision_enabled': True
             }
         },
         "default_template": "pdf_analysis",
@@ -98,7 +100,7 @@ COMMON_TEMPLATES = {
     "document_summarizer": {
         "primary_generator": {
             "provider": "ollama",
-            "model": "llama3.2:3b",
+            "model": "qwen2.5vl:3b",
             'config': {
                 'temperature': 0.1,
                 'max_tokens': 4096,

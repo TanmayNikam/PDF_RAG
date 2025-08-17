@@ -133,6 +133,21 @@ class AdvancedPromptManager:
                 'description': 'Template for providing definitions and explanations'
             }
 
+        self.templates['qwen_multimodal'] = {
+            'template': """You are analyzing document pages that contain both text and visual elements. 
+        Use the provided page images to answer the question accurately.
+
+        Question: {question}
+
+        Visual Content: [IMAGES_PROVIDED]
+        Text Context: {text_context}
+
+        Based on both the visual content and text context, provide a comprehensive answer:""",
+            'input_variables': ['question', 'text_context'],
+            'supports_images': True,
+            'description': 'Template for Qwen2.5-VL with visual understanding'
+        }
+
         def get_template(self, template_name: str) -> Optional[Dict]:
             """Get a specific prompt template"""
             return self.templates.get(template_name)
