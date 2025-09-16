@@ -11,15 +11,15 @@ from dataclasses import asdict
 import traceback
 
 # Import all our custom modules
-from src.document_processor import MultimodalDocumentProcessor
-from src.embeddings import create_embedder, MultimodalContent
-from src.vector_store import create_vector_store, documents_to_vector_documents, colpali_documents_to_vector_documents
-from src.retrieval import create_retriever, RetrievalPipeline, Query
-from src.generation import create_generation_pipeline, MultimodalGenerationPipeline
+from document_processor import MultimodalDocumentProcessor
+from embeddings import create_embedder, MultimodalContent
+from vector_store import create_vector_store, documents_to_vector_documents, colpali_documents_to_vector_documents
+from retrieval import create_retriever, RetrievalPipeline, Query
+from generation import create_generation_pipeline, MultimodalGenerationPipeline
 
-from src.embeddings.colpali_embedder import ColPaliEmbedder
-from src.document_processor.colpali_processor import ColPaliDocumentProcessor
-from src.retrieval.colpali_retriever import ColPaliRetriever
+from embeddings.colpali_embedder import ColPaliEmbedder
+from document_processor.colpali_processor import ColPaliDocumentProcessor
+from retrieval.colpali_retriever import ColPaliRetriever
 from vector_store import VectorDocument
 
 
@@ -136,11 +136,12 @@ class MultimodalRAGSystem:
             'generation': {
                 'primary_generator': {
                     'provider': 'ollama',
-                    'model': 'llama3.2:3b',
+                    'model': 'qwen2.5vl:3b',
                     'config': {
                         'temperature': 0.1,
                         'max_tokens': 4096,
-                        'use_chat_model': True
+                        'use_chat_model': True,
+                        'vision_enabled': True
                     }
                 },
                 'enable_fallback': True,
@@ -156,7 +157,7 @@ class MultimodalRAGSystem:
             # System config
             'system': {
                 'save_processed_docs': True,
-                'output_dir': './rag_outputs',
+                'output_dir': '/content/MultiModalRAGS/content/MultiModalRAGS/MultiModalRAGS/rag_outputs',
                 'log_level': 'INFO',
                 'enable_performance_tracking': True
             }
@@ -167,7 +168,7 @@ class MultimodalRAGSystem:
         try:
             print(self.config)
             if self.config.get('colpali', {}).get('enabled', False):
-                self.logger.info("🔧 Initializing ColPali...")
+                self.logger.info(" Initializing ColPali...")
 
                 self.document_processor = ColPaliDocumentProcessor(self.config['colpali'])
 
@@ -178,7 +179,7 @@ class MultimodalRAGSystem:
                 )
 
 
-                self.logger.info("✅ ColPali components initialized")
+                self.logger.info(" ColPali components initialized")
 
             else:
 
@@ -293,15 +294,16 @@ class MultimodalRAGSystem:
             # Step 2: Convert to vector documents
             self.logger.info(" Step 2: Generating embeddings...")
             # print("embedder while adding documents is: ",self.embedder)
-            print("is colpali enabled: ", self.config.get('colpali',{}).get('enabled', False))
-            print("processed_documents: ", processed_documents)
+            # print("is colpali enabled: ", self.config.get('colpali',{}).get('enabled', False))
+            # print("processed_documents: ", processed_documents)
+
             if(self.config.get('colpali',{}).get('enabled', False)):
                 vector_docs = colpali_documents_to_vector_documents(processed_documents, self.embedder)
             else:
                 vector_docs = documents_to_vector_documents(processed_documents, self.embedder)
             self.logger.info(f" Generated {len(vector_docs)} vector documents")
 
-            print("vector docs: ", vector_docs)
+            # print("vector docs: ", vector_docs)
             # Step 3: Add to vector store
             self.logger.info(" Step 3: Adding to vector store...")
             doc_ids = self.vector_store.add_documents(vector_docs)
@@ -403,7 +405,7 @@ class MultimodalRAGSystem:
                 query_metadata=query_config.get('metadata', {})
             )
 
-            self.logger.info(f"✅ Retrieved {len(retrieval_results)} relevant documents")
+            self.logger.info(f"Retrieved {len(retrieval_results)} relevant documents")
 
             # Step 2: Convert retrieval results to generation format
             context_documents = []
@@ -705,7 +707,7 @@ class MultimodalRAGSystem:
 
         while True:
             try:
-                question = input("\n❓ Your question: ").strip()
+                question = input("\n Your question: ").strip()
 
                 if question.lower() in ['quit', 'exit', 'q']:
                     print(" Goodbye!")
@@ -817,7 +819,7 @@ if __name__ == "__main__":
 
     if args.save:
         pdf_files = [
-            "/Users/tanmay/Downloads/hm-rag.pdf"
+            "/content/hm-rag.pdf"
         ]
         rag.add_documents(pdf_files)
 

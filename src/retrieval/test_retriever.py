@@ -234,7 +234,7 @@ def test_query_processor():
             expected_intent = test_case['expected_intent']
             expected_type = test_case['expected_type']
 
-            print(f"\n🔍 Query {i + 1}: '{query_text}'")
+            print(f"\n Query {i + 1}: '{query_text}'")
 
             # Process query
             processed_query = processor.process_query(query_text)
@@ -267,12 +267,12 @@ def test_query_processor():
             total_predictions += 1
 
         accuracy = correct_predictions / total_predictions if total_predictions > 0 else 0
-        print(f"\n📊 Query Processing Accuracy: {accuracy:.2%}")
+        print(f"\n Query Processing Accuracy: {accuracy:.2%}")
 
         return True
 
     except Exception as e:
-        print(f"❌ Query processor test failed: {e}")
+        print(f" Query processor test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -321,12 +321,12 @@ def test_dense_retrieval():
         ]
 
         for query_text in test_queries:
-            print(f"\n🔍 Query: '{query_text}'")
+            print(f"\n Query: '{query_text}'")
 
             query = Query(text=query_text, query_type="semantic")
             results = dense_retriever.retrieve(query, top_k=3)
 
-            print(f"📊 Found {len(results)} results:")
+            print(f" Found {len(results)} results:")
             for i, result in enumerate(results):
                 print(f"  {i + 1}. Score: {result.score:.3f} | ID: {result.document_id}")
                 print(f"     Content: {result.content[:60]}...")
@@ -339,16 +339,16 @@ def test_dense_retrieval():
             results = dense_retriever.retrieve(query, top_k=5)
         avg_time = (time.time() - start_time) / 10
 
-        print(f"\n⏱️  Average query time: {avg_time:.4f}s")
+        print(f"\n⏱ Average query time: {avg_time:.4f}s")
 
         # Get retriever stats
         stats = dense_retriever.get_stats()
-        print(f"📊 Retriever stats: {stats['stats']}")
+        print(f" Retriever stats: {stats['stats']}")
 
         return True
 
     except Exception as e:
-        print(f"❌ Dense retrieval test failed: {e}")
+        print(f" Dense retrieval test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -378,8 +378,8 @@ def test_sparse_retrieval():
 
         # Get vocabulary stats
         vocab_stats = sparse_retriever.get_enhanced_stats()
-        print(f"📊 Vocabulary size: {vocab_stats['vocabulary_stats']['size']}")
-        print(f"📊 Average document length: {vocab_stats['index_stats']['avg_doc_length']:.1f}")
+        print(f"Vocabulary size: {vocab_stats['vocabulary_stats']['size']}")
+        print(f"Average document length: {vocab_stats['index_stats']['avg_doc_length']:.1f}")
 
         # Test keyword queries
         test_queries = [
@@ -390,12 +390,12 @@ def test_sparse_retrieval():
         ]
 
         for query_text in test_queries:
-            print(f"\n🔍 Query: '{query_text}'")
+            print(f"\n Query: '{query_text}'")
 
             query = Query(text=query_text, query_type="keyword")
             results = sparse_retriever.retrieve(query, top_k=3)
 
-            print(f"📊 Found {len(results)} results:")
+            print(f"Found {len(results)} results:")
             for i, result in enumerate(results):
                 print(f"  {i + 1}. Score: {result.score:.3f} | ID: {result.document_id}")
                 print(f"     Content: {result.content[:60]}...")
@@ -414,7 +414,7 @@ def test_sparse_retrieval():
         return True
 
     except Exception as e:
-        print(f"❌ Sparse retrieval test failed: {e}")
+        print(f"Sparse retrieval test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -492,7 +492,7 @@ def test_hybrid_retrieval():
             query = Query(text=query_text, query_type="hybrid")
             results = hybrid_retriever.retrieve(query, top_k=4)
 
-            print(f"📊 Found {len(results)} results:")
+            print(f"Found {len(results)} results:")
             for i, result in enumerate(results):
                 print(f"  {i + 1}. Score: {result.score:.3f} | ID: {result.document_id}")
                 print(f"     Content: {result.content[:60]}...")
@@ -505,7 +505,7 @@ def test_hybrid_retrieval():
                 print(f"     Dense: {dense_score}, Sparse: {sparse_score}, Both: {found_in_both}")
 
         # Test adaptive weighting
-        print(f"\n🔍 Testing Adaptive Weighting:")
+        print(f"\nTesting Adaptive Weighting:")
 
         adaptive_queries = [
             'Define machine learning',  # Should favor dense
@@ -523,7 +523,7 @@ def test_hybrid_retrieval():
 
         # Get comprehensive stats
         stats = hybrid_retriever.get_comprehensive_stats()
-        print(f"\n📊 Fusion Statistics:")
+        print(f"\nFusion Statistics:")
         print(f"  Dense preferred: {stats['fusion_stats']['dense_preferred']}")
         print(f"  Sparse preferred: {stats['fusion_stats']['sparse_preferred']}")
         print(f"  Balanced: {stats['fusion_stats']['balanced']}")
@@ -531,7 +531,7 @@ def test_hybrid_retrieval():
         return True
 
     except Exception as e:
-        print(f"❌ Hybrid retrieval test failed: {e}")
+        print(f"Hybrid retrieval test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -592,12 +592,12 @@ def test_retrieval_pipeline():
         ]
 
         for query_text in test_queries:
-            print(f"\n🔍 Pipeline Query: '{query_text}'")
+            print(f"\n Pipeline Query: '{query_text}'")
 
             # Use pipeline search (includes query processing)
             results = pipeline.search(query_text, top_k=3)
 
-            print(f"📊 Pipeline Results ({len(results)} found):")
+            print(f" Pipeline Results ({len(results)} found):")
             for i, result in enumerate(results):
                 print(f"  {i + 1}. Score: {result.score:.3f} | ID: {result.document_id}")
                 print(f"     Content: {result.content[:60]}...")
@@ -606,7 +606,7 @@ def test_retrieval_pipeline():
                     'original_query') != query_text else "")
 
         # Test performance comparison
-        print(f"\n⏱️  Performance Comparison:")
+        print(f"\n Performance Comparison:")
 
         # Direct retriever
         start_time = time.time()
@@ -628,7 +628,7 @@ def test_retrieval_pipeline():
         return True
 
     except Exception as e:
-        print(f"❌ Retrieval pipeline test failed: {e}")
+        print(f"Retrieval pipeline test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -694,7 +694,6 @@ def test_retrieval_quality():
             relevant_topics = test_case['relevant_topics']
             relevant_ids = test_case['relevant_ids']
 
-            print(f"\n🔍 Quality Test: '{query_text}'")
 
             # Test both retrievers
             for retriever_name, retriever in [('dense', dense_retriever), ('hybrid', hybrid_retriever)]:
@@ -705,7 +704,7 @@ def test_retrieval_quality():
                 relevant_found = 0
                 total_relevant = len(relevant_ids)
 
-                print(f"\n📊 {retriever_name.title()} Results:")
+                print(f"\n {retriever_name.title()} Results:")
                 for i, result in enumerate(results):
                     is_relevant = (
                             result.document_id in relevant_ids or
@@ -715,8 +714,7 @@ def test_retrieval_quality():
                     if is_relevant:
                         relevant_found += 1
 
-                    relevance_mark = "✅" if is_relevant else "❌"
-                    print(f"  {i + 1}. {relevance_mark} Score: {result.score:.3f} | ID: {result.document_id}")
+                    print(f"  {i + 1}. Score: {result.score:.3f} | ID: {result.document_id}")
                     print(f"     Topic: {result.metadata.get('topic', 'unknown')}")
 
                 # Calculate precision and recall
@@ -735,7 +733,7 @@ def test_retrieval_quality():
                 })
 
         # Calculate average scores
-        print(f"\n📊 OVERALL QUALITY METRICS:")
+        print(f"\n OVERALL QUALITY METRICS:")
         for retriever_name, scores in retriever_scores.items():
             if scores:
                 avg_precision = sum(s['precision'] for s in scores) / len(scores)
@@ -750,7 +748,7 @@ def test_retrieval_quality():
         return True
 
     except Exception as e:
-        print(f"❌ Retrieval quality test failed: {e}")
+        print(f" Retrieval quality test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -771,7 +769,7 @@ def test_performance_benchmarks():
         doc_counts = [10, 50, 100]
 
         for doc_count in doc_counts:
-            print(f"\n📊 Testing with {doc_count} documents:")
+            print(f"\n Testing with {doc_count} documents:")
 
             # Create test documents
             test_docs = create_test_documents(doc_count)
@@ -838,7 +836,7 @@ def test_performance_benchmarks():
         return True
 
     except Exception as e:
-        print(f"❌ Performance benchmark failed: {e}")
+        print(f" Performance benchmark failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -876,7 +874,7 @@ def run_retrieval_tests():
         try:
             results['performance_benchmarks'] = test_performance_benchmarks()
         except Exception as e:
-            print(f"⚠️  Performance test skipped: {e}")
+            print(f" Performance test skipped: {e}")
 
     except Exception as e:
         print(f"Test suite failed: {e}")
@@ -885,14 +883,14 @@ def run_retrieval_tests():
 
     # Print results summary
     print(f"\n" + "=" * 60)
-    print("📊 RETRIEVAL SYSTEM TEST RESULTS")
+    print(" RETRIEVAL SYSTEM TEST RESULTS")
     print("=" * 60)
 
     total_tests = len(results)
     passed_tests = sum(results.values())
 
     for test_name, passed in results.items():
-        status = "✅ PASSED" if passed else "❌ FAILED"
+        status = "PASSED" if passed else "FAILED"
         print(f"{test_name.replace('_', ' ').title(): <25} {status}")
 
     print(f"\nOverall: {passed_tests}/{total_tests} tests passed")
@@ -903,11 +901,11 @@ def run_retrieval_tests():
     core_total = len(core_tests)
 
     if core_passed == core_total:
-        print("\n🎉 All core retrieval tests passed! System is ready!")
+        print("\n All core retrieval tests passed! System is ready!")
     elif core_passed >= core_total - 1:
-        print("\n⚠️  Most core tests passed. System is functional.")
+        print("\n️  Most core tests passed. System is functional.")
     else:
-        print("\n❌ Core tests failed. Check setup and dependencies.")
+        print("\n Core tests failed. Check setup and dependencies.")
 
     # Next steps
     print(f"\n" + "=" * 60)
@@ -919,7 +917,7 @@ def run_retrieval_tests():
         print("✓ Ready for LLM integration")
         print("✓ Can build complete RAG pipeline")
     else:
-        print("❌ Fix retrieval system issues first")
+        print(" Fix retrieval system issues first")
 
     if results['retrieval_quality']:
         print("✓ Quality metrics validated")
@@ -934,12 +932,12 @@ def run_retrieval_tests():
 
 def quick_retrieval_test():
     """Quick test for development"""
-    print("🔥 QUICK RETRIEVAL TEST")
+    print(" QUICK RETRIEVAL TEST")
     print("=" * 30)
 
     try:
         # Quick hybrid test
-        print("\n🔧 Testing hybrid retrieval...")
+        print("\n Testing hybrid retrieval...")
 
         embedder = create_embedder("text")
         vector_store = create_vector_store("faiss", dimension=embedder.get_dimension())
@@ -975,16 +973,16 @@ def quick_retrieval_test():
         query = Query(text="neural network learning", query_type="hybrid")
         results = hybrid_retriever.retrieve(query, top_k=2)
 
-        print(f"✅ Quick test passed!")
-        print(f"   📊 Query: 'neural network learning'")
-        print(f"   📊 Found: {len(results)} results")
+        print(f" Quick test passed!")
+        print(f" Query: 'neural network learning'")
+        print(f" Found: {len(results)} results")
         if results:
-            print(f"   📊 Top result: {results[0].document_id} (score: {results[0].score:.3f})")
+            print(f"Top result: {results[0].document_id} (score: {results[0].score:.3f})")
 
         return True
 
     except Exception as e:
-        print(f"❌ Quick test failed: {e}")
+        print(f" Quick test failed: {e}")
         import traceback
         traceback.print_exc()
         return False

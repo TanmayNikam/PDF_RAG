@@ -52,7 +52,7 @@ class ColPaliEmbedder(BaseEmbedder):
             # Load model and processor
             self.model = ColPali.from_pretrained(
                 self.model_name,
-                torch_dtype=torch.float16 if self.device == "mps" else torch.float32,
+                torch_dtype=torch.float16 if self.device.startswith("cuda") else torch.float32,
                 device_map=self.device
             )
 
@@ -62,7 +62,7 @@ class ColPaliEmbedder(BaseEmbedder):
             self.model.eval()
 
             self.is_loaded = True
-            self.logger.info(f"✅ Loaded ColPali model on {self.device}")
+            self.logger.info(f" Loaded ColPali model on {self.device}")
 
         except Exception as e:
             self.logger.error(f"Failed to load ColPali model: {e}")

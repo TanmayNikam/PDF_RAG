@@ -7,10 +7,10 @@
 # Primary LLM Configuration
 primary_generator:
   provider: "ollama"  # ollama, openai, groq
-  model: "llama3.2:3b"
+  model: "qwen2.5vl:3b"
   config:
     temperature: 0.1
-    max_tokens: 1024
+    max_tokens: 4096
     top_p: 0.9
     use_chat_model: true
     ollama_base_url: "http://localhost:11434"

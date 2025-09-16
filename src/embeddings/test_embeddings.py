@@ -29,7 +29,7 @@ try:
         MultimodalEmbedder
     )
 except ImportError as e:
-    print(f"❌ Import error: {e}")
+    print(f" Import error: {e}")
     sys.exit(1)
 
 def test_text_embeddings():
@@ -58,23 +58,23 @@ def test_text_embeddings():
         results = text_embedder.embed(test_texts)
         processing_time = time.time() - start_time
 
-        print(f"✅ Generated {len(results)} text embeddings")
-        print(f"⏱️  Processing time: {processing_time:.3f}s")
-        print(f"📊 Embedding dimension: {results[0].dimension}")
-        print(f"🔧 Model: {results[0].model_name}")
+        print(f" Generated {len(results)} text embeddings")
+        print(f" Processing time: {processing_time:.3f}s")
+        print(f" Embedding dimension: {results[0].dimension}")
+        print(f" Model: {results[0].model_name}")
 
         # Test similarity
         similarity = np.dot(results[0].embedding, results[1].embedding)
-        print(f"🔗 Similarity between first two texts: {similarity:.3f}")
+        print(f" Similarity between first two texts: {similarity:.3f}")
 
         # Show embedding stats
         embedding_lengths = [np.linalg.norm(r.embedding) for r in results]
-        print(f"📏 Embedding norms: {[f'{l:.3f}' for l in embedding_lengths]}")
+        print(f" Embedding norms: {[f'{l:.3f}' for l in embedding_lengths]}")
 
         return True
 
     except Exception as e:
-        print(f"❌ Text embedding test failed: {e}")
+        print(f" Text embedding test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -117,27 +117,27 @@ def test_image_embeddings():
         results = image_embedder.embed(test_images)
         processing_time = time.time() - start_time
 
-        print(f"✅ Generated {len(results)} image embeddings")
-        print(f"⏱️  Processing time: {processing_time:.3f}s")
-        print(f"📊 Embedding dimension: {results[0].dimension}")
-        print(f"🔧 Model: {results[0].model_name}")
+        print(f" Generated {len(results)} image embeddings")
+        print(f" Processing time: {processing_time:.3f}s")
+        print(f" Embedding dimension: {results[0].dimension}")
+        print(f" Model: {results[0].model_name}")
 
         # Test similarity (red images should be more similar)
         similarity_red_red = np.dot(results[0].embedding, results[3].embedding)
         similarity_red_blue = np.dot(results[0].embedding, results[1].embedding)
 
-        print(f"🔗 Similarity (red vs red): {similarity_red_red:.3f}")
-        print(f"🔗 Similarity (red vs blue): {similarity_red_blue:.3f}")
+        print(f" Similarity (red vs red): {similarity_red_red:.3f}")
+        print(f" Similarity (red vs blue): {similarity_red_blue:.3f}")
 
         if similarity_red_red > similarity_red_blue:
-            print("✅ Similarity test passed: same colors are more similar")
+            print(" Similarity test passed: same colors are more similar")
         else:
-            print("⚠️  Similarity test unexpected: different colors more similar")
+            print(" Similarity test unexpected: different colors more similar")
 
         return True
 
     except Exception as e:
-        print(f"❌ Image embedding test failed: {e}")
+        print(f" Image embedding test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -167,18 +167,18 @@ def test_clip_text_embeddings():
         text_results = clip_embedder.embed_text(test_texts)
         processing_time = time.time() - start_time
 
-        print(f"✅ Generated {len(text_results)} CLIP text embeddings")
-        print(f"⏱️  Processing time: {processing_time:.3f}s")
-        print(f"📊 Embedding dimension: {text_results[0].dimension}")
+        print(f" Generated {len(text_results)} CLIP text embeddings")
+        print(f" Processing time: {processing_time:.3f}s")
+        print(f" Embedding dimension: {text_results[0].dimension}")
 
         # Test similarity between text descriptions
         similarity = np.dot(text_results[0].embedding, text_results[3].embedding)
-        print(f"🔗 Similarity ('red square' vs 'red colored image'): {similarity:.3f}")
+        print(f" Similarity ('red square' vs 'red colored image'): {similarity:.3f}")
 
         return True
 
     except Exception as e:
-        print(f"❌ CLIP text embedding test failed: {e}")
+        print(f" CLIP text embedding test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -236,9 +236,9 @@ def test_multimodal_embeddings():
         results = multimodal_embedder.embed(test_contents)
         processing_time = time.time() - start_time
 
-        print(f"✅ Generated {len(results)} multimodal embeddings")
-        print(f"⏱️  Processing time: {processing_time:.3f}s")
-        print(f"📊 Embedding dimension: {results[0].dimension}")
+        print(f" Generated {len(results)} multimodal embeddings")
+        print(f" Processing time: {processing_time:.3f}s")
+        print(f" Embedding dimension: {results[0].dimension}")
 
         # Analyze results
         for i, result in enumerate(results):
@@ -247,19 +247,19 @@ def test_multimodal_embeddings():
             has_image = result.metadata['has_image']
 
             print(f"  Content {i+1} ({content_type}):")
-            print(f"    Has text: {has_text}, Has image: {has_image}")
-            print(f"    Embedding norm: {np.linalg.norm(result.embedding):.3f}")
+            print(f"  Has text: {has_text}, Has image: {has_image}")
+            print(f"  Embedding norm: {np.linalg.norm(result.embedding):.3f}")
 
         # Test similarity between multimodal contents
         similarity = multimodal_embedder.calculate_similarity(
             results[0].embedding, results[1].embedding
         )
-        print(f"🔗 Similarity between red and blue multimodal content: {similarity:.3f}")
+        print(f" Similarity between red and blue multimodal content: {similarity:.3f}")
 
         return True
 
     except Exception as e:
-        print(f"❌ Multimodal embedding test failed: {e}")
+        print(f" Multimodal embedding test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -282,25 +282,25 @@ def test_embedding_comparison():
         sentence_result = sentence_embedder.embed(test_text)
         clip_text_result = clip_embedder.embed_text(test_text)
 
-        print(f"📝 Test text: '{test_text}'")
-        print(f"🔧 SentenceTransformer dimension: {sentence_result.dimension}")
-        print(f"🔧 CLIP text dimension: {clip_text_result.dimension}")
+        print(f" Test text: '{test_text}'")
+        print(f" SentenceTransformer dimension: {sentence_result.dimension}")
+        print(f" CLIP text dimension: {clip_text_result.dimension}")
 
         # Show first few values of each embedding
-        print(f"📊 SentenceTransformer embedding (first 5): {sentence_result.embedding[:5]}")
-        print(f"📊 CLIP embedding (first 5): {clip_text_result.embedding[:5]}")
+        print(f" SentenceTransformer embedding (first 5): {sentence_result.embedding[:5]}")
+        print(f" CLIP embedding (first 5): {clip_text_result.embedding[:5]}")
 
         # Compare norms
         sentence_norm = np.linalg.norm(sentence_result.embedding)
         clip_norm = np.linalg.norm(clip_text_result.embedding)
 
-        print(f"📏 SentenceTransformer norm: {sentence_norm:.3f}")
-        print(f"📏 CLIP norm: {clip_norm:.3f}")
+        print(f" SentenceTransformer norm: {sentence_norm:.3f}")
+        print(f" CLIP norm: {clip_norm:.3f}")
 
         return True
 
     except Exception as e:
-        print(f"❌ Embedding comparison test failed: {e}")
+        print(f" Embedding comparison test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -322,7 +322,7 @@ def test_performance_benchmarks():
         ]
 
         # Test single vs batch processing
-        print("🚀 Testing single processing...")
+        print(" Testing single processing...")
         start_time = time.time()
         single_results = []
         for text in test_texts[:10]:  # Test with 10 texts
@@ -330,34 +330,34 @@ def test_performance_benchmarks():
             single_results.append(result)
         single_time = time.time() - start_time
 
-        print("🚀 Testing batch processing...")
+        print(" Testing batch processing...")
         start_time = time.time()
         batch_results = text_embedder.embed(test_texts[:10])
         batch_time = time.time() - start_time
 
-        print(f"⏱️  Single processing (10 texts): {single_time:.3f}s ({single_time/10:.3f}s per text)")
-        print(f"⏱️  Batch processing (10 texts): {batch_time:.3f}s ({batch_time/10:.3f}s per text)")
-        print(f"🏆 Speedup: {single_time/batch_time:.2f}x")
+        print(f" Single processing (10 texts): {single_time:.3f}s ({single_time/10:.3f}s per text)")
+        print(f" Batch processing (10 texts): {batch_time:.3f}s ({batch_time/10:.3f}s per text)")
+        print(f" Speedup: {single_time/batch_time:.2f}x")
 
         # Verify results are similar
         similarity = np.dot(single_results[0].embedding, batch_results[0].embedding)
-        print(f"🔗 Similarity between single and batch result: {similarity:.6f}")
+        print(f" Similarity between single and batch result: {similarity:.6f}")
 
         if similarity > 0.99:
-            print("✅ Single and batch processing produce consistent results")
+            print(" Single and batch processing produce consistent results")
         else:
-            print("⚠️  Single and batch processing results differ")
+            print(" Single and batch processing results differ")
 
         return True
 
     except Exception as e:
-        print(f"❌ Performance benchmark test failed: {e}")
+        print(f" Performance benchmark test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
 def run_embedding_tests():
     """Run all embedding tests"""
-    print("🚀 STARTING EMBEDDING SYSTEM TESTS")
+    print(" STARTING EMBEDDING SYSTEM TESTS")
     print("=" * 60)
 
     # Test results
@@ -388,28 +388,28 @@ def run_embedding_tests():
 
     # Print results summary
     print(f"\n" + "="*60)
-    print("📊 EMBEDDING TEST RESULTS")
+    print(" EMBEDDING TEST RESULTS")
     print("="*60)
 
     total_tests = len(results)
     passed_tests = sum(results.values())
 
     for test_name, passed in results.items():
-        status = "✅ PASSED" if passed else "❌ FAILED"
+        status = "PASSED" if passed else "FAILED"
         print(f"{test_name.replace('_', ' ').title(): <25} {status}")
 
     print(f"\nOverall: {passed_tests}/{total_tests} tests passed")
 
     if passed_tests == total_tests:
-        print("\n🎉 All embedding tests passed! Ready for vector store integration!")
+        print("\n All embedding tests passed! Ready for vector store integration!")
     elif passed_tests >= total_tests // 2:
-        print(f"\n⚠️  Most tests passed. Check failed ones above.")
+        print(f"\n Most tests passed. Check failed ones above.")
     else:
-        print(f"\n❌ Many tests failed. Check dependencies and setup.")
+        print(f"\n Many tests failed. Check dependencies and setup.")
 
     # Next steps
     print(f"\n" + "="*60)
-    print("📋 NEXT STEPS")
+    print(" NEXT STEPS")
     print("="*60)
 
     if results['text_embeddings'] and results['multimodal_embeddings']:
@@ -417,7 +417,7 @@ def run_embedding_tests():
         print("✓ Ready to build vector store")
         print("✓ Can start working on retrieval system")
     else:
-        print("❌ Fix core embedding issues first")
+        print(" Fix core embedding issues first")
 
     if results['performance_benchmarks']:
         print("✓ Performance optimization verified")
@@ -426,7 +426,7 @@ def run_embedding_tests():
 
 def quick_embedding_test():
     """Quick test for development"""
-    print("🔥 QUICK EMBEDDING TEST")
+    print(" QUICK EMBEDDING TEST")
     print("="*30)
 
     try:
@@ -434,19 +434,19 @@ def quick_embedding_test():
         # Quick text test
         text_embedder = create_embedder("text")
         result = text_embedder.embed("Hello world")
-        print(f"✅ Text embedding: dimension {result.dimension}")
+        print(f" Text embedding: dimension {result.dimension}")
 
         # Quick multimodal test
         multimodal_embedder = create_embedder("multimodal")
         content = MultimodalContent(text="Test content")
         result = multimodal_embedder.embed(content)
-        print(f"✅ Multimodal embedding: dimension {result.dimension}")
+        print(f" Multimodal embedding: dimension {result.dimension}")
 
-        print("\n✅ Quick embedding test PASSED!")
+        print("\n Quick embedding test PASSED!")
         return True
 
     except Exception as e:
-        print(f"❌ Quick test failed: {e}")
+        print(f" Quick test failed: {e}")
         return False
 
 def main():

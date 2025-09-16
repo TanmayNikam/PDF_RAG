@@ -61,7 +61,7 @@ class CLIPImageEmbedder(BaseEmbedder):
                 self.dimension = self.model.config.projection_dim
 
             # self.is_loaded = True
-            # self.logger.info(f"✅ Loaded {self.model_name}, dimension: {self.dimension}")
+            # self.logger.info(f" Loaded {self.model_name}, dimension: {self.dimension}")
 
         except Exception as e:
             self.logger.error(f"Failed to load CLIP model: {e}")

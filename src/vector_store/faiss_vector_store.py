@@ -86,7 +86,7 @@ class FAISSVectorStore(BaseVectorStore):
                 raise ValueError(f"Unsupported index type: {self.index_type}")
 
             self.is_initialized = True
-            self.logger.info(f"✅ Initialized FAISS index: {self.index_type}, dimension: {self.dimension}")
+            self.logger.info(f" Initialized FAISS index: {self.index_type}, dimension: {self.dimension}")
 
         except Exception as e:
             self.logger.error(f"Failed to initialize FAISS index: {e}")
@@ -166,7 +166,7 @@ class FAISSVectorStore(BaseVectorStore):
             # Prepare query embedding
             query = query_embedding.reshape(1, -1).astype(np.float32)
 
-            print("query embeddding: ", query)
+            # print("query embeddding: ", query)
 
             # Normalize for cosine similarity
             if self.index_type in ['IndexFlatIP', 'IndexIVFFlat']:
@@ -468,7 +468,7 @@ class FAISSVectorStore(BaseVectorStore):
             if self.index_type == 'IndexIVFFlat' and hasattr(self.index, 'make_direct_map'):
                 # Adding direct map for faster ID lookups
                 self.index.make_direct_map()
-                self.logger.info("✅ Added direct map to IVF index")
+                self.logger.info(" Added direct map to IVF index")
         except Exception as e:
             self.logger.warning(f"Index optimization failed: {e}")
 

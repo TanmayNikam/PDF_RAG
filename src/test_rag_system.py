@@ -35,8 +35,7 @@ import traceback
 try:
     from main_rag_system import MultimodalRAGSystem, create_rag_system, quick_rag_setup
 except ImportError as e:
-    print(f"❌ Import error: {e}")
-    print("Make sure you have the complete src/ directory structure with all modules")
+    print(f"Import error: {e}")
     sys.exit(1)
 
 
@@ -155,7 +154,7 @@ def create_test_documents() -> List[Path]:
     documents = []
 
     # Create test PDF
-    print("📄 Creating test PDF document...")
+    print("Creating test PDF document...")
     pdf_content = create_test_pdf_content()
 
     if isinstance(pdf_content, bytes) and pdf_content.startswith(b'%PDF'):
@@ -231,7 +230,7 @@ sequential data like text and time series.
     #         f.write(doc_info['content'])
     #     documents.append(doc_path)
 
-    print(f"✅ Created {len(documents)} test documents in {test_dir}")
+    print(f"Created {len(documents)} test documents in {test_dir}")
     return documents, test_dir
 
 
@@ -242,31 +241,31 @@ def test_system_initialization():
     print("=" * 60)
 
     try:
-        print("🔧 Creating RAG system with default configuration...")
+        print("Creating RAG system with default configuration...")
         rag_system = create_rag_system(COLPALI_CONFIG_EXAMPLE)
 
-        print("✅ System initialized successfully")
+        print("System initialized successfully")
 
         # Test health check
         health = rag_system.health_check()
-        print(f"📊 System health: {health['status']}")
+        print(f"System health: {health['status']}")
 
         if health['status'] == 'error':
-            print("❌ System health errors:")
+            print("System health errors:")
             for issue in health['issues']:
                 print(f"  - {issue}")
             return False
 
         # Test system stats
         stats = rag_system.get_system_stats()
-        print(f"📈 System stats:")
+        print(f" System stats:")
         print(f"  Initialized: {stats['system_status']['initialized']}")
         print(f"  Components: {sum(stats['system_status']['components_status'].values())}/5")
 
         return True
 
     except Exception as e:
-        print(f"❌ System initialization failed: {e}")
+        print(f"System initialization failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -279,31 +278,31 @@ def test_document_processing(rag_system, test_documents):
     print("=" * 60)
 
     try:
-        print(f"📄 Processing {len(test_documents)} test documents...")
+        print(f"Processing {len(test_documents)} test documents...")
 
         # Add documents to the system
         result = rag_system.add_documents(test_documents)
 
         if result['success']:
-            print(f"✅ Document processing successful!")
-            print(f"  Documents processed: {result['documents_processed']}")
-            print(f"  Vector documents created: {result['vector_documents_created']}")
-            print(f"  Documents indexed: {result['documents_indexed']}")
-            print(f"  Processing time: {result['processing_time']:.2f}s")
+            print(f" Document processing successful!")
+            print(f" Documents processed: {result['documents_processed']}")
+            print(f" Vector documents created: {result['vector_documents_created']}")
+            print(f" Documents indexed: {result['documents_indexed']}")
+            print(f" Processing time: {result['processing_time']:.2f}s")
 
             # Check system state after adding documents
             stats = rag_system.get_system_stats()
-            print(f"📊 Updated system stats:")
-            print(f"  Total documents: {stats['system_status']['document_count']}")
-            print(f"  Documents processed: {stats['performance_stats']['documents_processed']}")
+            print(f" Updated system stats:")
+            print(f" Total documents: {stats['system_status']['document_count']}")
+            print(f" Documents processed: {stats['performance_stats']['documents_processed']}")
 
             return True
         else:
-            print(f"❌ Document processing failed: {result['error']}")
+            print(f"Document processing failed: {result['error']}")
             return False
 
     except Exception as e:
-        print(f"❌ Document processing test failed: {e}")
+        print(f"Document processing test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -355,19 +354,19 @@ def test_query_answering(rag_system):
                 sources = result['sources']
                 query_time = result['query_time']
 
-                print(f"✅ Query successful (Time: {query_time:.2f}s)")
-                print(f"📝 Answer: {answer[:200]}{'...' if len(answer) > 200 else ''}")
-                print(f"📚 Sources found: {len(sources)}")
+                print(f"Query successful (Time: {query_time:.2f}s)")
+                print(f"Answer: {answer[:200]}{'...' if len(answer) > 200 else ''}")
+                print(f"Sources found: {len(sources)}")
 
                 # Check if answer contains expected topics
                 answer_lower = answer.lower()
                 found_topics = [topic for topic in expected_topics if topic in answer_lower]
 
                 if found_topics:
-                    print(f"✅ Found expected topics: {found_topics}")
+                    print(f"Found expected topics: {found_topics}")
                     successful_queries += 1
                 else:
-                    print(f"⚠️  Expected topics not found: {expected_topics}")
+                    print(f"Expected topics not found: {expected_topics}")
 
                 # Show top sources
                 for j, source in enumerate(sources[:2]):
@@ -375,13 +374,13 @@ def test_query_answering(rag_system):
                           f"Type: {source['metadata']['content_type']}")
 
             else:
-                print(f"❌ Query failed: {result['error']}")
+                print(f"Query failed: {result['error']}")
 
         except Exception as e:
-            print(f"❌ Query error: {e}")
+            print(f"Query error: {e}")
 
     success_rate = successful_queries / len(test_queries)
-    print(f"\n📊 Query Test Results:")
+    print(f"\nQuery Test Results:")
     print(f"  Successful queries: {successful_queries}/{len(test_queries)}")
     print(f"  Success rate: {success_rate:.1%}")
 
@@ -398,14 +397,14 @@ def test_system_persistence(rag_system):
 
     try:
         # Save the system
-        print("💾 Saving RAG system...")
+        print("Saving RAG system...")
         save_success = rag_system.save_system(temp_save_dir)
 
         if not save_success:
-            print("❌ Failed to save system")
+            print("Failed to save system")
             return False
 
-        print("✅ System saved successfully")
+        print("System saved successfully")
 
         # Get current stats for comparison
         original_stats = rag_system.get_system_stats()
@@ -417,36 +416,36 @@ def test_system_persistence(rag_system):
         load_success = new_rag_system.load_system(temp_save_dir)
 
         if not load_success:
-            print("❌ Failed to load system")
+            print("Failed to load system")
             return False
 
-        print("✅ System loaded successfully")
+        print("System loaded successfully")
 
         # Verify loaded system
         loaded_stats = new_rag_system.get_system_stats()
         loaded_doc_count = loaded_stats['system_status']['document_count']
 
-        print(f"📊 Verification:")
+        print(f" Verification:")
         print(f"  Original documents: {original_doc_count}")
         print(f"  Loaded documents: {loaded_doc_count}")
 
         if loaded_doc_count == original_doc_count:
-            print("✅ Document count matches")
+            print(" Document count matches")
 
             # Test a query on loaded system
             test_result = new_rag_system.query("What is multimodal AI?", top_k=2)
             if test_result['success']:
-                print("✅ Query on loaded system successful")
+                print(" Query on loaded system successful")
                 return True
             else:
-                print("❌ Query on loaded system failed")
+                print(" Query on loaded system failed")
                 return False
         else:
-            print("❌ Document count mismatch")
+            print(" Document count mismatch")
             return False
 
     except Exception as e:
-        print(f"❌ Persistence test failed: {e}")
+        print(f" Persistence test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -468,34 +467,34 @@ def test_error_handling(rag_system):
         result = fresh_system.query("Test query")
 
         if not result['success'] and 'no documents' in result['error'].lower():
-            print("✅ Proper error handling for empty system")
+            print(" Proper error handling for empty system")
         else:
-            print("⚠️  Unexpected behavior for empty system")
+            print(" Unexpected behavior for empty system")
 
         # Test invalid file path
         try:
             result = rag_system.add_documents(["/nonexistent/file.pdf"])
             if not result['success']:
-                print("✅ Proper error handling for invalid files")
+                print("Proper error handling for invalid files")
             else:
-                print("⚠️  Expected error for invalid files")
+                print(" Expected error for invalid files")
         except Exception:
-            print("✅ Exception handling for invalid files")
+            print(" Exception handling for invalid files")
 
         # Test empty query
         result = rag_system.query("")
-        print(f"Empty query handling: {'✅' if not result['success'] or len(result['answer']) > 0 else '⚠️'}")
+        print(f"Empty query handling: {'sucess' if not result['success'] or len(result['answer']) > 0 else 'failed'}")
 
         return True
 
     except Exception as e:
-        print(f"❌ Error handling test failed: {e}")
+        print(f" Error handling test failed: {e}")
         return False
 
 
 def run_comprehensive_test():
     """Run comprehensive test of the complete RAG system"""
-    print("🚀 STARTING COMPREHENSIVE RAG SYSTEM TEST")
+    print(" STARTING COMPREHENSIVE RAG SYSTEM TEST")
     print("=" * 70)
 
     # Test results tracking
@@ -513,7 +512,7 @@ def run_comprehensive_test():
 
     try:
         # Setup test documents
-        print("📄 Setting up test documents...")
+        print("Setting up test documents...")
         test_documents, test_dir = create_test_documents()
 
         # Test 1: System Initialization
@@ -537,7 +536,7 @@ def run_comprehensive_test():
             results['error_handling'] = test_error_handling(rag_system)
 
     except Exception as e:
-        print(f"❌ Test suite failed: {e}")
+        print(f" Test suite failed: {e}")
         import traceback
         traceback.print_exc()
 
@@ -548,14 +547,14 @@ def run_comprehensive_test():
 
     # Print results summary
     print(f"\n" + "=" * 70)
-    print("📊 COMPREHENSIVE TEST RESULTS")
+    print(" COMPREHENSIVE TEST RESULTS")
     print("=" * 70)
 
     total_tests = len(results)
     passed_tests = sum(results.values())
 
     for test_name, passed in results.items():
-        status = "✅ PASSED" if passed else "❌ FAILED"
+        status = " PASSED" if passed else " FAILED"
         print(f"{test_name.replace('_', ' ').title(): <25} {status}")
 
     print(f"\nOverall: {passed_tests}/{total_tests} tests passed")
@@ -566,59 +565,48 @@ def run_comprehensive_test():
     core_total = len(core_tests)
 
     if core_passed == core_total:
-        print("\n🎉 All core tests passed! RAG system is fully functional!")
+        print("\n All core tests passed! RAG system is fully functional!")
         success = True
     elif core_passed >= core_total - 1:
-        print(f"\n⚠️  Most core tests passed. System is largely functional.")
+        print(f"\n Most core tests passed. System is largely functional.")
         success = True
     else:
-        print(f"\n❌ Core tests failed. System needs fixes.")
+        print(f"\n Core tests failed. System needs fixes.")
         success = False
-
-    # Next steps
-    print(f"\n" + "=" * 70)
-    print("📋 NEXT STEPS")
-    print("=" * 70)
 
     if success:
         print("✓ RAG system is ready for production use!")
         print("✓ You can now:")
-        print("  - Add your own PDF documents")
-        print("  - Query the system interactively")
-        print("  - Integrate into applications")
-        print("  - Save/load system state")
     else:
-        print("❌ Fix the failing tests before production use")
-        print("💡 Common issues:")
-        print("  - Missing dependencies (check requirements)")
-        print("  - LLM connectivity (Ollama, API keys)")
-        print("  - File permissions")
+        print(" Fix the failing tests before production use")
+        print(" Common issues:")
+
 
     return success
 
 
 def run_quick_test():
     """Run a quick integration test"""
-    print("🔥 QUICK RAG SYSTEM INTEGRATION TEST")
+    print(" QUICK RAG SYSTEM INTEGRATION TEST")
     print("=" * 50)
 
     try:
         # Quick system test
-        print("🔧 Creating RAG system...")
+        print(" Creating RAG system...")
         rag_system = create_rag_system(COLPALI_CONFIG_EXAMPLE)
 
         # Health check
         health = rag_system.health_check()
-        print(f"📊 System health: {health['status']}")
+        print(f"System health: {health['status']}")
 
         if health['status'] == 'error':
-            print("❌ System has critical errors:")
+            print(" System has critical errors:")
             for issue in health['issues']:
                 print(f"  - {issue}")
             return False
 
         # Create simple test document
-        print("📄 Creating test document...")
+        print(" Creating test document...")
         test_dir = Path(tempfile.mkdtemp(prefix="quick_test_"))
         test_file = test_dir / "quick_test.txt"
 
@@ -677,12 +665,12 @@ recommendation systems, and autonomous vehicles.
 
 def run_interactive_demo():
     """Run interactive demo"""
-    print("🎮 INTERACTIVE RAG SYSTEM DEMO")
+    print(" INTERACTIVE RAG SYSTEM DEMO")
     print("=" * 50)
 
     try:
         # Setup system with sample documents
-        print("🔧 Setting up RAG system with sample documents...")
+        print(" Setting up RAG system with sample documents...")
         test_documents, test_dir = create_test_documents()
 
         rag_system = create_rag_system(COLPALI_CONFIG_EXAMPLE)
@@ -690,18 +678,18 @@ def run_interactive_demo():
         add_result = rag_system.add_documents(test_documents)
 
         if add_result['success']:
-            print(f"✅ System ready with {add_result['documents_processed']} documents!")
+            print(f" System ready with {add_result['documents_processed']} documents!")
 
             # Start interactive demo
             rag_system.interactive_demo()
         else:
-            print(f"❌ Setup failed: {add_result['error']}")
+            print(f" Setup failed: {add_result['error']}")
 
         # Cleanup
         shutil.rmtree(test_dir, ignore_errors=True)
 
     except Exception as e:
-        print(f"❌ Demo setup failed: {e}")
+        print(f" Demo setup failed: {e}")
         import traceback
         traceback.print_exc()
 

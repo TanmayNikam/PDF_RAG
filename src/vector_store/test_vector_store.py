@@ -32,10 +32,6 @@ try:
     print("Successfully imported vector store and embedding modules")
 except ImportError as e:
     print(f"Import error: {e}")
-    print("Make sure you have:")
-    print("  - src/vector_store/ directory with all modules")
-    print("  - src/embeddings/ directory with all modules")
-    print("  - Required dependencies: faiss-cpu, sentence-transformers")
     sys.exit(1)
 
 
@@ -106,15 +102,15 @@ def test_basic_vector_store_operations():
 
     try:
         # Create vector store
-        print("🔧 Creating FAISS vector store...")
+        print(" Creating FAISS vector store...")
         vector_store = create_vector_store("faiss", dimension=384)
 
         # Create test documents
-        print("📄 Creating test documents...")
+        print(" Creating test documents...")
         test_docs = create_test_documents(20)
 
         # Add documents
-        print("➕ Adding documents to store...")
+        print(" Adding documents to store...")
         start_time = time.time()
         doc_ids = vector_store.add_documents(test_docs)
         add_time = time.time() - start_time
@@ -123,7 +119,7 @@ def test_basic_vector_store_operations():
         print(f"Store stats: {vector_store.get_stats()}")
 
         # Test search
-        print("🔍 Testing search...")
+        print(" Testing search...")
         query_embedding = test_docs[0].embedding
 
         start_time = time.time()
@@ -139,7 +135,7 @@ def test_basic_vector_store_operations():
             print(f"     Content: {result.document.content[:60]}...")
 
         # Test document retrieval
-        print("📄 Testing document retrieval...")
+        print(" Testing document retrieval...")
         retrieved_doc = vector_store.get_document(doc_ids[0])
         if retrieved_doc:
             print(f"Retrieved document: {retrieved_doc.id}")
@@ -179,21 +175,21 @@ def test_hybrid_vector_store():
             }
         }
 
-        print("🔧 Creating hybrid vector store...")
+        print(" Creating hybrid vector store...")
         hybrid_store = create_vector_store("hybrid", dimension=384, config=config)
 
         # Create diverse test documents
-        print("📄 Creating diverse test documents...")
+        print(" Creating diverse test documents...")
         test_docs = create_test_documents(30)
 
         # Add documents
-        print("➕ Adding documents to hybrid store...")
+        print(" Adding documents to hybrid store...")
         doc_ids = hybrid_store.add_documents(test_docs)
 
         print(f"Added {len(doc_ids)} documents")
 
         # Test advanced search
-        print("🔍 Testing advanced search...")
+        print(" Testing advanced search...")
         query_embedding = test_docs[0].embedding
 
         # Basic search
@@ -256,11 +252,11 @@ def test_persistence():
     try:
         # Create temporary directory
         temp_dir = tempfile.mkdtemp()
-        print(f"📁 Using temp directory: {temp_dir}")
+        print(f" Using temp directory: {temp_dir}")
 
         try:
             # Create and populate vector store
-            print("🔧 Creating vector store...")
+            print(" Creating vector store...")
             vector_store = create_vector_store("faiss", dimension=384)
 
             test_docs = create_test_documents(15)
@@ -368,7 +364,7 @@ def test_performance_benchmarks():
         results = []
 
         for test_config in test_configs:
-            print(f"\n🚀 Testing {test_config['name']}...")
+            print(f"\n Testing {test_config['name']}...")
 
             # Create vector store
             vector_store = create_vector_store(
@@ -409,14 +405,14 @@ def test_performance_benchmarks():
 
             results.append(benchmark_result)
 
-            print(f"  📊 Documents: {benchmark_result['doc_count']}")
-            print(f"  ⏱️  Insertion: {benchmark_result['insertion_time']:.3f}s")
-            print(f"  ⚡ Insert rate: {benchmark_result['docs_per_second_insert']:.1f} docs/sec")
-            print(f"  🔍 Avg search: {benchmark_result['avg_search_time']:.4f}s")
-            print(f"  🏃 Search rate: {benchmark_result['searches_per_second']:.1f} searches/sec")
+            print(f"  Documents: {benchmark_result['doc_count']}")
+            print(f"  Insertion: {benchmark_result['insertion_time']:.3f}s")
+            print(f"  Insert rate: {benchmark_result['docs_per_second_insert']:.1f} docs/sec")
+            print(f"  Avg search: {benchmark_result['avg_search_time']:.4f}s")
+            print(f"  Search rate: {benchmark_result['searches_per_second']:.1f} searches/sec")
 
         # Summary
-        print(f"\n📊 PERFORMANCE SUMMARY")
+        print(f"\n PERFORMANCE SUMMARY")
         print("-" * 50)
         for result in results:
             print(f"{result['name']:20} | "
@@ -426,7 +422,7 @@ def test_performance_benchmarks():
         return True
 
     except Exception as e:
-        print(f"❌ Performance benchmark failed: {e}")
+        print(f" Performance benchmark failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -440,7 +436,7 @@ def test_integration_with_embeddings():
 
     try:
         # Create embedder and vector store
-        print("🔧 Creating embedder and vector store...")
+        print(" Creating embedder and vector store...")
         text_embedder = create_embedder("text")
         vector_store = create_vector_store("hybrid", dimension=text_embedder.get_dimension())
 
@@ -456,7 +452,7 @@ def test_integration_with_embeddings():
             "Embedding models convert text into dense vector representations."
         ]
 
-        print(f"📄 Processing {len(texts)} real text documents...")
+        print(f" Processing {len(texts)} real text documents...")
 
         # Generate embeddings and create vector documents
         vector_docs = []
@@ -479,10 +475,10 @@ def test_integration_with_embeddings():
 
         # Add to vector store
         doc_ids = vector_store.add_documents(vector_docs)
-        print(f"✅ Added {len(doc_ids)} documents with real embeddings")
+        print(f" Added {len(doc_ids)} documents with real embeddings")
 
         # Test semantic search
-        print("🔍 Testing semantic search...")
+        print(" Testing semantic search...")
 
         queries = [
             "neural network algorithms",
@@ -491,7 +487,7 @@ def test_integration_with_embeddings():
         ]
 
         for query in queries:
-            print(f"\n🔍 Query: '{query}'")
+            print(f"\n Query: '{query}'")
 
             # Generate query embedding
             query_result = text_embedder.embed(query)
@@ -499,13 +495,13 @@ def test_integration_with_embeddings():
             # Search
             results = vector_store.search(query_result.embedding, top_k=3)
 
-            print(f"📊 Found {len(results)} results:")
+            print(f" Found {len(results)} results:")
             for i, result in enumerate(results):
                 print(f"  {i + 1}. Score: {result.score:.3f}")
                 print(f"     Content: {result.document.content}")
 
         # Test similarity between related concepts
-        print("\n🔍 Testing semantic similarity...")
+        print("\n Testing semantic similarity...")
         concept_pairs = [
             ("machine learning", "neural networks"),
             ("vector search", "similarity matching"),
@@ -520,29 +516,29 @@ def test_integration_with_embeddings():
             print(f"  '{concept1}' ↔ '{concept2}': {similarity:.3f}")
 
         # Test retrieval accuracy
-        print("\n🔍 Testing retrieval accuracy...")
+        print("\n Testing retrieval accuracy...")
         test_doc = vector_docs[0]
         accuracy_results = vector_store.search(test_doc.embedding, top_k=3)
 
         if accuracy_results and accuracy_results[0].document.id == test_doc.id:
-            print("✅ Retrieval accuracy test passed")
+            print(" Retrieval accuracy test passed")
             print(f"   Self-similarity score: {accuracy_results[0].score:.3f}")
         else:
-            print("⚠️  Retrieval accuracy: unexpected top result")
+            print(" Retrieval accuracy: unexpected top result")
 
         # Test embedding normalization
-        print("\n🔍 Testing embedding normalization...")
+        print("\n Testing embedding normalization...")
         norms = [np.linalg.norm(doc.embedding) for doc in vector_docs[:3]]
         avg_norm = sum(norms) / len(norms)
         print(f"  Average embedding norm: {avg_norm:.3f}")
 
         if 0.95 <= avg_norm <= 1.05:
-            print("✅ Embeddings are properly normalized")
+            print(" Embeddings are properly normalized")
         else:
-            print("⚠️  Embeddings may not be normalized")
+            print("  Embeddings may not be normalized")
 
         # Test batch search performance
-        print("\n🔍 Testing batch search...")
+        print("\n Testing batch search...")
         batch_queries = ["AI research", "machine learning", "data processing"]
         batch_embeddings = []
 
@@ -559,11 +555,11 @@ def test_integration_with_embeddings():
         print(f"  Batch search time: {batch_time:.3f}s for {len(batch_queries)} queries")
         print(f"  Average per query: {batch_time / len(batch_queries):.4f}s")
 
-        print("\n✅ Integration with embeddings test completed successfully!")
+        print("\n Integration with embeddings test completed successfully!")
         return True
 
     except Exception as e:
-        print(f"❌ Integration test failed: {e}")
+        print(f" Integration test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -571,7 +567,7 @@ def test_integration_with_embeddings():
 
 def quick_vector_store_test():
     """Quick test for development"""
-    print("🔥 QUICK VECTOR STORE TEST")
+    print(" QUICK VECTOR STORE TEST")
     print("=" * 30)
 
     try:
@@ -688,12 +684,12 @@ def test_simple_end_to_end():
         print(f" Created {len(vector_docs)} vector documents")
 
         # Step 5: Add to vector store
-        print("🔧 Step 5: Adding documents to vector store...")
+        print(" Step 5: Adding documents to vector store...")
         doc_ids = vector_store.add_documents(vector_docs)
-        print(f"✅ Added {len(doc_ids)} documents to store")
+        print(f" Added {len(doc_ids)} documents to store")
 
         # Step 6: Test search
-        print("🔧 Step 6: Testing search...")
+        print(" Step 6: Testing search...")
         test_queries = [
             "deep learning neural networks",
             "text processing and language",
@@ -701,7 +697,7 @@ def test_simple_end_to_end():
         ]
 
         for query in test_queries:
-            print(f"\n🔍 Query: '{query}'")
+            print(f"\n Query: '{query}'")
 
             # Generate query embedding
             query_result = text_embedder.embed(query)
@@ -709,14 +705,14 @@ def test_simple_end_to_end():
             # Search vector store
             results = vector_store.search(query_result.embedding, top_k=3)
 
-            print(f"📊 Found {len(results)} results:")
+            print(f" Found {len(results)} results:")
             for i, result in enumerate(results):
                 print(f"  {i + 1}. Score: {result.score:.3f}")
                 print(f"     ID: {result.document.id}")
                 print(f"     Content: {result.document.content[:60]}...")
 
         # Step 7: Test advanced features
-        print("\n🔧 Step 7: Testing advanced features...")
+        print("\n Step 7: Testing advanced features...")
 
         # Test filtering
         filters = {'category': 'AI/ML'}
@@ -725,40 +721,40 @@ def test_simple_end_to_end():
             top_k=3,
             filters=filters
         )
-        print(f"📊 Filtered search: {len(filtered_results)} results")
+        print(f" Filtered search: {len(filtered_results)} results")
 
         # Test document retrieval
         retrieved_doc = vector_store.get_document(doc_ids[0])
         if retrieved_doc:
-            print(f"📄 Retrieved document: {retrieved_doc.id}")
+            print(f" Retrieved document: {retrieved_doc.id}")
 
         # Step 8: Test persistence
-        print("\n🔧 Step 8: Testing save/load...")
+        print("\n Step 8: Testing save/load...")
         temp_dir = tempfile.mkdtemp()
 
         try:
             # Save
             save_success = vector_store.save(temp_dir)
-            print(f"💾 Save successful: {save_success}")
+            print(f" Save successful: {save_success}")
 
             # Load into new store
             new_store = create_vector_store("hybrid", dimension=text_embedder.get_dimension())
             load_success = new_store.load(temp_dir)
-            print(f"📁 Load successful: {load_success}")
+            print(f" Load successful: {load_success}")
 
             # Verify
             if load_success:
                 verify_results = new_store.search(query_result.embedding, top_k=1)
-                print(f"✅ Verification: {len(verify_results)} results found in loaded store")
+                print(f" Verification: {len(verify_results)} results found in loaded store")
 
         finally:
             shutil.rmtree(temp_dir)
 
-        print("\n✅ End-to-end test completed successfully!")
+        print("\n End-to-end test completed successfully!")
         return True
 
     except Exception as e:
-        print(f"❌ End-to-end test failed: {e}")
+        print(f" End-to-end test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -772,7 +768,7 @@ def test_multimodal_vector_storage():
 
     try:
         # Create multimodal embedder and vector store
-        print("🔧 Creating multimodal embedder and vector store...")
+        print(" Creating multimodal embedder and vector store...")
         multimodal_embedder = create_embedder("multimodal")
         vector_store = create_vector_store("hybrid", dimension=multimodal_embedder.get_dimension())
 
@@ -799,7 +795,7 @@ def test_multimodal_vector_storage():
             }
         ]
 
-        print(f"📄 Processing {len(multimodal_contents)} multimodal items...")
+        print(f" Processing {len(multimodal_contents)} multimodal items...")
 
         # Generate embeddings and create vector documents
         vector_docs = []
@@ -823,10 +819,10 @@ def test_multimodal_vector_storage():
 
         # Add to vector store
         doc_ids = vector_store.add_documents(vector_docs)
-        print(f"✅ Added {len(doc_ids)} multimodal documents")
+        print(f" Added {len(doc_ids)} multimodal documents")
 
         # Test multimodal search
-        print("🔍 Testing multimodal search...")
+        print(" Testing multimodal search...")
 
         # Create a query
         query_content = MultimodalContent(text="AI performance visualization")
@@ -834,7 +830,7 @@ def test_multimodal_vector_storage():
 
         results = vector_store.search(query_result.embedding, top_k=3)
 
-        print(f"📊 Multimodal search results:")
+        print(f" Multimodal search results:")
         for i, result in enumerate(results):
             print(f"  {i + 1}. Score: {result.score:.3f}")
             print(f"     Content: {result.document.content}")
@@ -843,7 +839,7 @@ def test_multimodal_vector_storage():
         return True
 
     except Exception as e:
-        print(f"❌ Multimodal test failed: {e}")
+        print(f" Multimodal test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -857,7 +853,7 @@ def test_document_processor_integration():
 
     try:
         # Simulate document processor output
-        print("📄 Simulating document processor output...")
+        print(" Simulating document processor output...")
 
         processed_documents = [
             {
@@ -911,24 +907,24 @@ def test_document_processor_integration():
         text_embedder = create_embedder("text")
 
         # Convert to vector documents using our integration function
-        print("🔄 Converting to vector documents...")
+        print(" Converting to vector documents...")
         vector_docs = documents_to_vector_documents(processed_documents, text_embedder)
 
-        print(f"✅ Converted to {len(vector_docs)} vector documents")
+        print(f" Converted to {len(vector_docs)} vector documents")
 
         # Display conversion results
         for doc in vector_docs:
-            print(f"  📄 {doc.id} ({doc.content_type}): {doc.content[:50]}...")
+            print(f"  {doc.id} ({doc.content_type}): {doc.content[:50]}...")
 
         # Create vector store and add documents
-        print("💾 Adding to vector store...")
+        print(" Adding to vector store...")
         vector_store = create_vector_store("hybrid", dimension=text_embedder.get_dimension())
         doc_ids = vector_store.add_documents(vector_docs)
 
-        print(f"✅ Added {len(doc_ids)} documents to vector store")
+        print(f" Added {len(doc_ids)} documents to vector store")
 
         # Test search across different content types
-        print("🔍 Testing search across content types...")
+        print(" Testing search across content types...")
 
         queries = [
             "neural network architecture",
@@ -940,7 +936,7 @@ def test_document_processor_integration():
             query_result = text_embedder.embed(query)
             results = vector_store.search(query_result.embedding, top_k=2)
 
-            print(f"\n🔍 Query: '{query}'")
+            print(f"\n Query: '{query}'")
             for i, result in enumerate(results):
                 print(f"  {i + 1}. {result.document.content_type} - Score: {result.score:.3f}")
                 print(f"     Content: {result.document.content[:60]}...")
@@ -948,14 +944,14 @@ def test_document_processor_integration():
         return True
 
     except Exception as e:
-        print(f"❌ Document processor integration test failed: {e}")
+        print(f" Document processor integration test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
 
 def run_vector_store_tests():
     """Run all vector store tests"""
-    print("🚀 STARTING VECTOR STORE SYSTEM TESTS")
+    print(" STARTING VECTOR STORE SYSTEM TESTS")
     print("=" * 60)
 
     # Test results
@@ -987,18 +983,18 @@ def run_vector_store_tests():
             try:
                 results['multimodal_storage'] = test_multimodal_vector_storage()
             except Exception as e:
-                print(f"⚠️  Multimodal test skipped: {e}")
+                print(f" Multimodal test skipped: {e}")
 
             try:
                 results['document_processor_integration'] = test_document_processor_integration()
             except Exception as e:
-                print(f"⚠️  Document processor integration test skipped: {e}")
+                print(f" Document processor integration test skipped: {e}")
 
             # Performance test (may be slow)
             try:
                 results['performance'] = test_performance_benchmarks()
             except Exception as e:
-                print(f"⚠️  Performance test skipped: {e}")
+                print(f" Performance test skipped: {e}")
 
     except Exception as e:
         print(f"Test suite failed: {e}")
@@ -1007,14 +1003,14 @@ def run_vector_store_tests():
 
     # Print results summary
     print(f"\n" + "=" * 60)
-    print("📊 VECTOR STORE TEST RESULTS")
+    print(" VECTOR STORE TEST RESULTS")
     print("=" * 60)
 
     total_tests = len(results)
     passed_tests = sum(results.values())
 
     for test_name, passed in results.items():
-        status = "✅ PASSED" if passed else "❌ FAILED"
+        status = " PASSED" if passed else " FAILED"
         print(f"{test_name.replace('_', ' ').title(): <35} {status}")
 
     print(f"\nOverall: {passed_tests}/{total_tests} tests passed")
@@ -1025,15 +1021,15 @@ def run_vector_store_tests():
     core_total = len(core_tests)
 
     if core_passed == core_total:
-        print("\n🎉 All core tests passed! Vector store system is ready!")
+        print("\n All core tests passed! Vector store system is ready!")
     elif core_passed >= core_total - 1:
-        print(f"\n⚠️  Most core tests passed. Vector store is functional.")
+        print(f"\n Most core tests passed. Vector store is functional.")
     else:
-        print(f"\n❌ Core tests failed. Check setup and dependencies.")
+        print(f"\nCore tests failed.")
 
     # Next steps
     print(f"\n" + "=" * 60)
-    print("📋 NEXT STEPS")
+    print(" NEXT STEPS")
     print("=" * 60)
 
     if results['basic_operations'] and results['embedding_integration']:
@@ -1041,7 +1037,7 @@ def run_vector_store_tests():
         print("✓ Integration with embeddings verified")
         print("✓ Ready to build retrieval system")
     else:
-        print("❌ Fix core vector store issues first")
+        print("Fix core vector store issues first")
 
     if results['simple_end_to_end']:
         print("✓ End-to-end workflow verified")

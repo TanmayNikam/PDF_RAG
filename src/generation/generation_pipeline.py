@@ -62,11 +62,12 @@ class MultimodalGenerationPipeline:
 
         default_primary_config = {
             'provider': 'ollama',
-            'model': 'llama3.2:3b',
+            'model': 'qwen2.5vl:3b',
             'config': {
                 'temperature': 0.1,
                 'max_tokens': 4096,
-                'use_chat_model': True
+                'use_chat_model': True,
+                'vision_enabled': True
             }
         }
 
@@ -274,6 +275,12 @@ class MultimodalGenerationPipeline:
     def _select_optimal_template(self, context_documents: List[Dict], query: str,
                                  content_analysis: Dict, explicit_template: Optional[str] = None) -> str:
         """Enhanced template selection based on content analysis and query type"""
+
+        # Check for visual content
+        has_images = any(doc.get('page_image') for doc in context_documents)
+
+        if has_images:
+            return 'qwen_multimodal'
 
         if explicit_template:
             return explicit_template

@@ -30,7 +30,7 @@ class DenseRetriever(BaseRetriever):
         self.boost_recent = self.config.get('boost_recent', False)
         self.diversity_penalty = self.config.get('diversity_penalty', 0.1)
 
-        self.logger.info(f"✅ Initialized Dense Retriever with {vector_store.document_count} documents")
+        self.logger.info(f"Initialized Dense Retriever with {vector_store.document_count} documents")
 
     def retrieve(self, query: Query, top_k: int = 10) -> List[RetrievalResult]:
         """Retrieve documents using dense vector similarity"""

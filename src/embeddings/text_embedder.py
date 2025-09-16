@@ -73,7 +73,7 @@ class SentenceTransformerEmbedder(BaseEmbedder):
                 self.dimension = test_embedding.shape[1]
 
             self.is_loaded = True
-            # self.logger.info(f"✅ Loaded {self.model_name}, dimension: {self.dimension}")
+            # self.logger.info(f" Loaded {self.model_name}, dimension: {self.dimension}")
 
         except Exception as e:
             self.logger.error(f"Failed to load model {self.model_name}: {e}")
@@ -168,7 +168,7 @@ class HuggingFaceEmbedder(BaseEmbedder):
             self.dimension = self.model.config.hidden_size
 
             # self.is_loaded = True
-            # self.logger.info(f"✅ Loaded {self.model_name}, dimension: {self.dimension}")
+            # self.logger.info(f" Loaded {self.model_name}, dimension: {self.dimension}")
 
         except Exception as e:
             self.logger.error(f"Failed to load HuggingFace model: {e}")

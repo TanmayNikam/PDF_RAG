@@ -143,6 +143,8 @@ class ColPaliDocumentProcessor:
 
             except Exception as e:
                 self.logger.error(f"Failed to process {file_path}: {str(e)}")
+                import traceback
+                traceback.print_exc()
                 batch_results['failed_documents'] += 1
                 batch_results['documents'][str(file_path)] = {
                     'error': str(e),
@@ -267,8 +269,10 @@ class ColPaliDocumentProcessor:
         # Create a JSON-serializable copy
         json_result = result.copy()
 
+        colpali_chunks = json_result.get('colpali_chunks', [])
+
         # Handle binary image data
-        for chunk in json_result.get('colpali_chunks', []):
+        for chunk in colpali_chunks:
             if 'page_image' in chunk and chunk['page_image']:
                 # Save image separately
                 image_file = output_dir / f"{chunk['chunk_id']}.png"

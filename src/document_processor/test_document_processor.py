@@ -26,9 +26,9 @@ try:
     # from document_processor.multi_modal_document_processor import MultimodalDocumentProcessor
     # from srcdocument_processor.hybrid_text_chunker import HybridTextChunker
 
-    print("✅ Successfully imported custom modules")
+    print("Successfully imported custom modules")
 except ImportError as e:
-    print(f"❌ Import error: {e}")
+    print(f"Import error: {e}")
     print("Make sure you've created the src/document_processor directory and files")
     sys.exit(1)
 
@@ -50,9 +50,9 @@ def download_test_pdf(url: str, filename: str) -> Path:
                 for chunk in response.iter_content(chunk_size=8192):
                     f.write(chunk)
 
-            print(f"✓ Downloaded: {filepath}")
+            print(f" Downloaded: {filepath}")
         except Exception as e:
-            print(f"✗ Failed to download {filename}: {e}")
+            print(f" Failed to download {filename}: {e}")
             return None
     else:
         print(f"✓ Test file exists: {filepath}")
@@ -131,7 +131,7 @@ def test_basic_functionality():
 
         return processor
     except Exception as e:
-        print(f"❌ Failed to initialize processor: {e}")
+        print(f" Failed to initialize processor: {e}")
         return None
 
 
@@ -180,7 +180,7 @@ def test_text_chunking():
         return len(chunks) > 0
 
     except Exception as e:
-        print(f"❌ Text chunking test failed: {e}")
+        print(f" Text chunking test failed: {e}")
         return False
 
 
@@ -216,7 +216,7 @@ def test_single_document(processor, file_path: Path):
         return True
 
     except Exception as e:
-        print(f"✗ Failed to process {file_path.name}: {str(e)}")
+        print(f"Failed to process {file_path.name}: {str(e)}")
         print(f"Error type: {type(e).__name__}")
         import traceback
         traceback.print_exc()
@@ -240,13 +240,13 @@ def test_batch_processing(processor, file_paths: List[Path]):
     try:
         batch_result = processor.process_batch(file_paths, output_dir)
 
-        print(f"✓ Batch processing completed")
-        print(f"  Total Documents: {batch_result['total_documents']}")
-        print(f"  Successful: {batch_result['successful_documents']}")
-        print(f"  Failed: {batch_result['failed_documents']}")
-        print(f"  Total Chunks: {batch_result['batch_metadata']['total_chunks']}")
-        print(f"  Text Chunks: {batch_result['batch_metadata']['total_text_chunks']}")
-        print(f"  Image Chunks: {batch_result['batch_metadata']['total_image_chunks']}")
+        print(f" Batch processing completed")
+        print(f" Total Documents: {batch_result['total_documents']}")
+        print(f" Successful: {batch_result['successful_documents']}")
+        print(f" Failed: {batch_result['failed_documents']}")
+        print(f" Total Chunks: {batch_result['batch_metadata']['total_chunks']}")
+        print(f" Text Chunks: {batch_result['batch_metadata']['total_text_chunks']}")
+        print(f" Image Chunks: {batch_result['batch_metadata']['total_image_chunks']}")
 
         # Show processed files
         print(f"\nProcessed files saved to: {output_dir}")
@@ -318,23 +318,23 @@ and question-answering systems.
 
 def quick_test():
     """Quick test for development"""
-    print("🔥 QUICK TEST MODE")
+    print(" QUICK TEST MODE")
     print("=" * 30)
 
     try:
         # Test basic functionality
         processor = test_basic_functionality()
         if not processor:
-            print("\n❌ Processor initialization failed")
+            print("\n Processor initialization failed")
             return False
 
         # Test text chunking
         chunking_works = test_text_chunking()
         if not chunking_works:
-            print("\n❌ Text chunking failed")
+            print("\n Text chunking failed")
             return False
 
-        print("\n✅ Quick test PASSED - Basic functionality works!")
+        print("\n Quick test PASSED - Basic functionality works!")
         print("\nNext steps:")
         print("1. Run full test: python test_document_processor.py --full")
         print("2. Check that src/document_processor/ directory exists")
@@ -343,7 +343,7 @@ def quick_test():
         return True
 
     except Exception as e:
-        print(f"\n❌ Quick test ERROR: {e}")
+        print(f"\n Quick test ERROR: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -351,7 +351,7 @@ def quick_test():
 
 def run_comprehensive_test():
     """Run all tests"""
-    print("🚀 STARTING MULTIMODAL DOCUMENT PROCESSOR TESTS")
+    print(" STARTING MULTIMODAL DOCUMENT PROCESSOR TESTS")
     print("=" * 60)
 
     # Test results tracking
@@ -368,7 +368,7 @@ def run_comprehensive_test():
         results['basic_functionality'] = processor is not None
 
         if not processor:
-            print("❌ Stopping tests - processor initialization failed")
+            print(" Stopping tests - processor initialization failed")
             return False
 
         # Test 2: Text chunking
@@ -401,24 +401,24 @@ def run_comprehensive_test():
 
     # Print final results
     print(f"\n" + "=" * 60)
-    print("📊 TEST RESULTS SUMMARY")
+    print(" TEST RESULTS SUMMARY")
     print("=" * 60)
 
     total_tests = len(results)
     passed_tests = sum(results.values())
 
     for test_name, passed in results.items():
-        status = "✅ PASSED" if passed else "❌ FAILED"
+        status = " PASSED" if passed else " FAILED"
         print(f"{test_name.replace('_', ' ').title(): <20} {status}")
 
     print(f"\nOverall: {passed_tests}/{total_tests} tests passed")
 
     if passed_tests == total_tests:
-        print("\n🎉 All tests passed! Your document processor is ready!")
+        print("\n All tests passed! Your document processor is ready!")
     elif passed_tests > total_tests // 2:
-        print(f"\n⚠️  Most tests passed. Check the failed ones above.")
+        print(f"\n Most tests passed. Check the failed ones above.")
     else:
-        print(f"\n❌ Many tests failed. Check your setup and dependencies.")
+        print(f"\n Many tests failed. Check your setup and dependencies.")
 
     # Provide next steps
     print(f"\n" + "=" * 60)
@@ -426,16 +426,16 @@ def run_comprehensive_test():
     print("=" * 60)
 
     if results['basic_functionality']:
-        print("✓ Basic setup works - you can start building embeddings next")
+        print(" Basic setup works - you can start building embeddings next")
     else:
-        print("❌ Fix basic setup first - check dependencies and file structure")
+        print(" Fix basic setup first - check dependencies and file structure")
 
     if results['single_document']:
-        print("✓ Document processing works - ready for vector store integration")
+        print(" Document processing works - ready for vector store integration")
     else:
-        print("❌ Document processing issues - check file permissions and dependencies")
+        print(" Document processing issues - check file permissions and dependencies")
 
-    print("\n📁 Generated files:")
+    print("\n Generated files:")
     print("- data/test_samples/ - Downloaded test PDFs")
     print("- data/processed/ - Processed document outputs")
 

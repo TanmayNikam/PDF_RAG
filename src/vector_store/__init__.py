@@ -20,10 +20,13 @@ from pathlib import Path
 # project_root = Path("/kaggle/working/MultiModalRAGS/MultiModalRAGS")
 # sys.path.insert(0, str(project_root))
 
+project_root = Path("/content/MultiModalRAGS/content/MultiModalRAGS/MultiModalRAGS")
+sys.path.insert(0, str(project_root))
+
 try:
     from src.embeddings import MultimodalContent
 except ImportError as e:
-    print(f"❌ Import error: {e}")
+    print(f"Import error: {e}")
     sys.exit(1)
 
 
@@ -133,6 +136,9 @@ def colpali_documents_to_vector_documents(processed_documents: List, colpali_emb
             page_image = chunk['page_image']
             embedding_result = colpali_embedder.embed(page_image)
 
+            import base64
+            img_base64 = base64.b64encode(page_image).decode('utf-8')
+
             # Create VectorDocument for the page
             vector_doc = VectorDocument(
                 id=chunk['chunk_id'],
@@ -148,8 +154,10 @@ def colpali_documents_to_vector_documents(processed_documents: List, colpali_emb
                     'dpi': chunk['metadata'].get('dpi'),
                     'original_size': chunk['metadata'].get('original_size'),
                     'rendering_method': 'colpali',
+                    'page_image': img_base64,
                     'has_page_image': True,
-                    'image_format': chunk['metadata'].get('image_format', 'PNG')
+                    'image_format': chunk['metadata'].get('image_format', 'PNG'),
+                    'has_visual_data': True
                 },
                 content_type='document_image',
                 chunk_id=chunk['chunk_id'],
